@@ -1,0 +1,74 @@
+﻿<!-- modal create -->
+<div class="modal" id="modal-add-edit" tabindex="-1" role="dialog" aria-labelledby="mediumModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered " role="document">
+        <div class="modal-content ">
+            <div class="modal-header ">
+                <div class="col-10 border-bottom-0 ">
+                    <h3 class="page-title ">Thêm mới Tài khoản</h3>
+                </div>
+                <button type="button" class="close btn-lg" data-bs-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body ">
+                <div class="form-group ">
+                    <label for="UserName" class="fw-bold ">Tên Tài khoản</label>
+                    <input type="text" class="form-control form-control-lg " name="UserName" id="UserName" placeholder="" value="" required="">
+                    <div class="valid-feedback " id="error_userName"></div>
+                </div>
+                <div class="form-group ">
+                    <label for="Password" class="fw-bold ">Mật khẩu</label>
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control form-control-lg " name="Password" id="Password" placeholder="" value=" " required="">
+                        <div class="input-group-append">
+                            <button class="btn btn-white" type="button" id="reset-password" onclick="ResetPassword();"><i class="fas fa-undo-alt"></i></button>
+                        </div>
+                    </div>
+                    <div class="valid-feedback " id="error_password"></div>
+                </div>
+                <div class="form-group ">
+                    <label for="FullName" class="fw-bold ">Họ và Tên</label>
+                    <input type="text" class="form-control form-control-lg " name="FullName" id="FullName" placeholder="" value="" required="">
+                    <div class="valid-feedback " id="error_fullName"></div>
+                </div>
+                <div class="form-group ">
+                    <label for="Phone" class="fw-bold ">Số điên thoại</label>
+                    <input type="text" class="form-control form-control-lg" name="Phone" id="Phone" placeholder="" value="" required="">
+                    <div class="valid-feedback " id="error_phone"></div>
+                </div>
+                <div class="form-group ">
+                    <label for="Address" class="fw-bold ">Địa chỉ</label>
+                    <input type="text" class="form-control form-control-lg" name="Address" id="Address" placeholder="" value="" required="">
+                    <div class="valid-feedback " id="error_address"></div>
+                </div>
+                <div class="form-group ">
+                    <label for="Email" class="fw-bold ">Email</label>
+                    <input type="text" class="form-control form-control-lg" name="Email" id="Email" placeholder="" value="" required="">
+                    <div class="valid-feedback " id="error_email"></div>
+                </div>
+                <div class="form-group ">
+                    <label for="Role" class="fw-bold ">Vai trò</label>
+                    <select id="Role" class="form-control form-control-lg custom-select custom-select-lg">
+                        <option value="0">Admin</option>
+                        <option value="1">Nhân viên</option>
+                        <option value="2" selected>Khách hàng</option>
+                    </select>                    
+                    <div class="valid-feedback" id="error_role"></div>
+                </div>
+                <div class="form-group ">
+                    <label for="Avatar" class="fw-bold ">Ảnh đại diện</label>
+                    <input type="file" class="form-control form-control-lg " name="Avatar" id="Avatar" value="">
+                    <div class="text-center m-3"><img class="img-fluid rounded" id="imgPreview" src="~/wwwroot/ImageProducts/no-image-icon-0.jpg" alt="image" /></div>
+                    <div class="valid-feedback" id="error_avatar"></div>
+                </div>
+                <div class="form-group custom-control custom-checkbox mb-1 ">
+                    <input type="checkbox" class="custom-control-input " id="status " checked="" disabled>
+                    <label class="custom-control-label " for="status ">Trạng thái</label>
+                </div>
+            </div>
+            <div class="modal-footer ">
+                <button type="button" class="btn btn-danger btn-lg me-md-2" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-success btn-lg" onclick="return Add();" id="Add" @*onclick="toastr.success('Thêm thành công!');"*@>Thêm</button>
+                <button type="button" class="btn btn-success btn-lg" onclick="return Edit();" id="Edit">Sửa</button>
+            </div>
+        </div>
+    </div>
+</div>

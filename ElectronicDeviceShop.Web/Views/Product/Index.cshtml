@@ -1,0 +1,347 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<!--================Home Banner Area =================-->
+<section class="banner_area">
+    <div class="banner_inner d-flex align-items-center">
+        <div class="container">
+            <div class="banner_content d-md-flex justify-content-between align-items-center">
+                <div class="mb-3 mb-md-0">
+                    <h2>Cửa hàng</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!--================End Home Banner Area =================-->
+<!--================Category Product Area =================-->
+<section class="cat_product_area section_gap">
+    <div class="container-fluid p-5">
+        <div class="row flex-row-reverse">
+            <div class="col-lg-9">
+                <div class="bg-light p-2">
+                    <div class="d-flex justify-content-end">
+                        <div class="col-lg-4 col-md-6">
+                            <input type="text" class="form-control" id="txtSearch" placeholder="Tìm kiếm" aria-label="Recipient's username" aria-describedby="basic-addon2">
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="latest_product_inner">
+                    <div class="row" id="data">
+                        @*DATA*@
+                    </div>
+                    <div class="col no-gutters py-4 d-flex flex-column text-center fw-bold col-12 border-top mt-4">
+                        <div class="dataTables_info" id="dt-material-checkbox_info" role="status" aria-live="polite">Showing 1 to 10 of 57 entries</div>
+                        <div class="dataTables_paginate paging_simple_numbers d-flex justify-content-center" id="dt-material-checkbox_paginate">
+                            <ul class="pagination">
+                                @*Pagination*@
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3">
+                <div class="left_sidebar_area">
+                    <aside class="left_widgets p_filter_widgets">
+                        <div class="l_w_title">
+                            <h3>Danh Mục</h3>
+                        </div>
+                        <div class="widgets_inner" id="CategoryFilter">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                                <label class="form-check-label" for="flexCheckDefault">
+                                    Default checkbox
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                                <label class="form-check-label" for="flexCheckDefault">
+                                    Default checkbox
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                                <label class="form-check-label" for="flexCheckDefault">
+                                    Default checkbox
+                                </label>
+                            </div>
+                        </div>
+                    </aside>
+
+                    <aside class="left_widgets p_filter_widgets">
+                        <div class="l_w_title">
+                            <h3>Nhà cung cấp</h3>
+                        </div>
+                        <div class="widgets_inner" id="SupplierFilter">
+
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                                <label class="form-check-label" for="flexCheckDefault">
+                                    Default checkbox
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                                <label class="form-check-label" for="flexCheckDefault">
+                                    Default checkbox
+                                </label>
+                            </div>
+                        </div>
+
+                    </aside>
+                    <aside class="left_widgets p_filter_widgets">
+                        <div class="l_w_title">
+                            <h3>Price Filter</h3>
+                        </div>
+                        <div class="widgets_inner">
+                            <input type="range" class="form-range" id="customRange1" value="" step="10000">
+                            <label for="customRange1" class="form-label" id="PriceFilter">Example range</label>
+                        </div>
+                    </aside>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!--================End Category Product Area =================-->
+@section Script{
+    <script>
+        var lastPage = 1;
+        var pageCurrent = 1;
+        let formatter = new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'VND' });
+        let money = new Intl.NumberFormat({ style: 'currency', currency: 'VND' });
+        let categoryFilter = new Array();
+        let supplierFilter = new Array();
+        let maxPrice = 0;
+        let first = 0;
+
+
+        $(document).ready(function () {
+            LoadData(null, 1);
+            $("body").on("click", ".pagination li a", function (event) {
+                event.preventDefault();
+                var page = $(this).attr('data-page');
+                Search(page);
+            });
+            LoadCategoryFilter();
+        });
+
+        $(document).on('input', '#customRange1', function (e) {
+            maxPrice = parseInt($("#customRange1").val().toString());
+            $("#PriceFilter").text("0 ₫ - " + formatter.format(maxPrice));
+            Search(pageCurrent);
+        });
+        $(document).on('change', '.form-check-input', function (e) {
+            var idBox = this.id;
+            var checkedBox = this.checked;
+            var stringList = idBox.split('-');
+            var ID = parseInt(stringList[1]);
+            if (checkedBox == true) {
+                if (stringList[0] == "Category")
+                    categoryFilter.push(ID);
+                else
+                    supplierFilter.push(ID);
+            }
+            else {
+                if (stringList[0] == "Category") {
+                    const index = categoryFilter.indexOf(ID);
+                    if (index > -1) {
+                        categoryFilter.splice(index, 1);
+                    }
+                }
+                else {
+                    const index = supplierFilter.indexOf(ID);
+                    if (index > -1) {
+                        supplierFilter.splice(index, 1);
+                    }
+                }
+            }
+            Search(pageCurrent);
+        });
+
+        function LoadCategoryFilter() {
+            $.ajax({
+                url: "/Product/GetSupGetCate",
+                type: "GET",
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (result) {
+                    html = '';
+                    $.each(result.category, function (key, item) {
+                        html += '<div class="form-check">';
+                        html += '<input class="form-check-input" type="checkbox" value="" id="Category-' + item.ID + '">';
+                        html += '<label class="form-check-label" for="Category-' + item.ID + '">';
+                        html += item.Name;
+                        html += '</label>';
+                        html += '</div>';
+                    });
+                    $("#CategoryFilter").html(html);
+
+                    html = '';
+
+                    $.each(result.supplier, function (key, item) {
+                        html += '<div class="form-check">';
+                        html += '<input class="form-check-input" type="checkbox" value="" id="Supplier-' + item.ID + '">';
+                        html += '<label class="form-check-label" for="Supplier-' + item.ID + '">';
+                        html += item.Name;
+                        html += '</label>';
+                        html += '</div>';
+                    });
+                    $("#SupplierFilter").html(html);
+                },
+                error: function (errormessage) {
+                    toastr.error(errormessage.responseText);
+                }
+        });
+        }
+        function LoadData(txtSearch, page) {
+            $.ajax({
+                url: "/Product/GetAll",
+                type: "GET",
+                data: $.param({ txtSearch: txtSearch, page: page, 'categoryFilter': categoryFilter, 'supplierFilter': supplierFilter, 'maxPrice' : maxPrice }, true),
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (result) {
+                    if (first == 0) {
+                        maxPrice = result.max;
+                        $('#customRange1').attr('min', 0);
+                        $('#customRange1').attr('max', maxPrice);
+                        first++;
+                        $("#PriceFilter").text("0 ₫ - " + formatter.format(maxPrice));
+                        $("#customRange1").val(maxPrice);
+                    }
+                    var html = '';
+                    $.each(result.data, function (key, item) {
+                        if (item.Price <= maxPrice) {
+                            if (item.Discount != 0) {
+                                money = '<span class="mr-4" style="color:red">' + formatter.format(item.Price * (100 - item.Discount) / 100) + '</span><span class="bg-warning fs-6 align-middle">-' + item.Discount + '%</span></br><del>' + formatter.format(item.Price) + '</del>';
+                            }
+                            else {
+                                discount = '';
+                                money = '<span class="mr-4" style="color:red">' + formatter.format(item.Price) + '</span>';
+                            }
+
+                            html += '<div class="col-lg-4 col-md-6 py-2">';
+                            html += '<div class="single-product d-flex flex-column m-2 card h-100">';
+                            html += '<div class="product-img" style="height:60% !important">';
+                            html += '<img class="card-img-top m-2"';
+                            html += 'src="/wwwroot/ImageProducts/' + item.Image + '"';
+                            html += ' alt="" style="height:80%;width:80%" href="/Product/Detail/' + item.ID_Product + '"/>';
+                            html += '<div class="p_icon">';
+                            html += '<a href="/Product/Detail/' + item.ID_Product + '">';
+                            html += '<i class="ti-eye"></i>';
+                            html += '</a>';
+                            html += ' <a onclick="AddCart(' + item.ID_Product + ');">';
+                            html += '<i class="ti-shopping-cart"></i>';
+                            html += '</a>';
+                            html += '</div>';
+                            html += '</div>';
+                            html += '<div class="product-btm" style="height:40% !important">';
+                            html += '<a href="/Product/Detail/' + item.ID_Product + '" class="d-block">';
+                            html += '<h4>' + item.Name + '</h4>';
+                            html += '</a>';
+                            html += '<div class="mt-3">';
+                            html += money;
+                            html += '</div>';
+                            html += '</div>';
+                            html += '</div>';
+                            html += '</div>';
+                        }
+                    });
+                    $('#data').html(html);
+                    //create pagination
+                    var pagination_string = "";
+                    pageCurrent = result.pageCurrent;
+                    var numSize = result.numSize;
+                    lastPage = numSize;
+
+                    $('#dt-material-checkbox_info').text(result.data.length + '/' + result.all.length);
+
+                    //create button previous
+                    if (pageCurrent > 1) {
+                        var pagePrevious = pageCurrent - 1;
+                        pagination_string += '<li class="page-item"><a href="" class="page-link" data-page=' + pagePrevious + '>Previous</a></li>';
+                    }
+
+                    for (i = 1; i <= numSize; i++) {
+                        if (i == pageCurrent) {
+                            pagination_string += '<li class="page-item active"><a href="" class="page-link" data-page=' + i + '>' + pageCurrent + '</a></li>';
+                        } else {
+                            pagination_string += '<li class="page-item"><a href="" class="page-link" data-page=' + i + '>' + i + '</a></li>';
+                        }
+                    }
+
+                    //create button next
+                    if (pageCurrent > 0 && pageCurrent < numSize) {
+                        var pageNext = pageCurrent + 1;
+                        pagination_string += '<li class="page-item"><a href="" class="page-link"  data-page=' + pageNext + '>Next</a></li>';
+                    }
+                    $(".pagination").html(pagination_string);
+
+                },
+                error: function (errormessage) {
+                    toastr.error(errormessage.responseText);
+                }
+            });
+        }
+        function Check() {
+            if (@Session["RoleAcc"] != 2) {
+                toastr.error('Bạn cần đăng nhập!');
+                return false;
+            }
+            return true;
+        }
+        function AddCart(id) {
+            if (Check() == false)
+                return false;
+            else {
+                let cart = {};
+                cart["ID_Product"] = id;
+                cart["Amount"] = 1;
+                cart["ID_Account"] = @Session["ID_Account"];
+
+                $.ajax({
+                    url: "/Cart/Create",
+                    data: JSON.stringify(cart),
+                    type: "POST",
+                    processData: false,
+                    contentType: "application/json;charset=utf-8",
+                    dataType: "json",
+                    success: function (result) {
+                        if (result) {
+                            toastr.success('Thêm giỏ hàng thành công!');
+                        }
+                        else {
+                            toastr.error('Thêm không thành thành công!');
+                            return false;
+                        }
+                    },
+                    error: function (errormessage) {
+                        alert(errormessage.responseText);
+                        toastr.error('Thêm không thành thành công!');
+                    }
+                });
+            }
+        }
+        const Search = (page) => {
+            var txtSearch = $("#txtSearch").val();
+            if (txtSearch != "") {
+                LoadData(txtSearch, page)
+            }
+            else {
+                LoadData(null, page);
+            }
+        }
+        $('#txtSearch').keyup(() => {
+            Search(1);
+        });
+        $('#txtSearch').keydown(() => {
+            Search(1);
+        });
+    </script>
+}

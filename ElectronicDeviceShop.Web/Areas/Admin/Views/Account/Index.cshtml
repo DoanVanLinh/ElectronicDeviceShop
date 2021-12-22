@@ -1,0 +1,713 @@
+﻿@using ElectronicDeviceShop.ViewModels.Accounts
+@model IEnumerable<AccountViewModel>
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+<div class="main-content-container container-fluid px-4">
+    <!-- Default Light Table -->
+    <div class="row">
+        <div class="col">
+            <div class="card card-small mb-4 mt-5">
+                <div class="card-header row no-gutters py-4 d-flex justify-content-between fw-bold col-12">
+                    <h3 class="m-0 col-sm-6 col-md-9 col-lg-2 text-black text-center text-sm-left">Tài khoản</h3>
+                    <div class="input-group mb-3 col-sm-6 col-md-9 col-lg-7">
+                        <div class="input-group input-group-seamless">
+                            <span class="input-group-prepend">
+                                <span class="input-group-text">
+                                    <i class="fas fa-search"></i>
+                                </span>
+                            </span>
+                            <input type="text" class="form-control" id="txtSearch" placeholder="Tìm kiếm" aria-label="Recipient's username" aria-describedby="basic-addon2">
+                        </div>
+                    </div>
+                    <button type="button" class="add-button col-sm-6 col-md-2 col-lg-1 mb-2 btn btn-lg btn-success mr-1" data-bs-toggle="modal" data-bs-target="#modal-add-edit" onclick="ClearTextBox();"><i class="fas fa-plus "></i></button>
+                </div>
+                <div class="card-body p-0 text-center align-middle table-responsive-lg ">
+                    <table class="table mb-0 ">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="border-0">#</th>
+                                <th class="border-0">@Html.DisplayNameFor(model => model.UserName)</th>
+                                <th class="border-0">@Html.DisplayNameFor(model => model.Email)</th>
+                                <th class="border-0">@Html.DisplayNameFor(model => model.Role)</th>
+                                <th class="border-0">@Html.DisplayNameFor(model => model.Avatar)</th>
+                                <th class="border-0">Chức năng</th>
+                            </tr>
+                        </thead>
+                        <tbody class="tbody-light">
+                            @*DATA*@
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card-footer col no-gutters py-4 d-flex flex-column text-center fw-bold col-12 border-top">
+                    <div class="dataTables_info" id="dt-material-checkbox_info" role="status" aria-live="polite">Showing 1 to 10 of 57 entries</div>
+                    <div class="dataTables_paginate paging_simple_numbers d-flex justify-content-center" id="dt-material-checkbox_paginate">
+                        <ul class="pagination">
+                            @*PAGINATION*@
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End Default Light Table -->
+</div>
+<!-- Modal -->
+<!-- modal detail -->
+<div class="modal" id="modal-detail" tabindex="-1 " role="dialog" aria-labelledby="mediumModalLabel " aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered " role="document">
+        <div class="modal-content ">
+            <div class="modal-header p-3">
+                <div class="col-10 border-bottom-0 ">
+                    <h3 class="page-title">Chi tiết Tài khoản</h3>
+                </div>
+                <button type="button" class="close btn-lg" data-bs-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body p-3 d-flex flex-column">
+                <div class="text-center">
+                    <img class="img-fluid" id="avatar-detail" height="50%" width="50%" src="#" />
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-bordered" style="table-layout: fixed;" id="product-detail">
+                        <tr>
+                            <th class="col-3" style="word-wrap: break-word;">Tên tài khoản</th>
+                            <td style="word-wrap: break-word;" id="userName-detail"></td>
+                        </tr>
+                        <tr>
+                            <th class="col-3" style="word-wrap: break-word;">Họ và tên</th>
+                            <td style="word-wrap: break-word;" id="fullName-detail"></td>
+                        </tr>
+                        <tr>
+                            <th class="col-3" style="word-wrap: break-word;">SĐT</th>
+                            <td style="word-wrap: break-word;" id="phone-detail"></td>
+                        </tr>
+                        <tr>
+                            <th class="col-3" style="word-wrap: break-word;">Địa chỉ</th>
+                            <td style="word-wrap: break-word;" id="address-detail"></td>
+                        </tr>
+                        <tr>
+                            <th class="col-3" style="word-wrap: break-word;">Email</th>
+                            <td style="word-wrap: break-word;" id="email-detail"></td>
+                        </tr>
+                        <tr>
+                            <th class="col-3" style="word-wrap: break-word;">Vai trò</th>
+                            <td style="word-wrap: break-word;" id="role-detail"></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class=" btn btn-danger btn-lg me-md-2" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+@section modal{
+    @Html.Partial("Create")
+    @Html.Partial("Delete")
+    <div class="modal" id="modal-permission" tabindex="-1 " role="dialog" aria-labelledby="mediumModalLabel " aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+            <div class="modal-content ">
+                <div class="modal-header p-3">
+                    <div class="col-10 border-bottom-0 ">
+                        <h3 class="page-title">
+                            Phân quyền
+                        </h3>
+                    </div>
+                    <button type="button" class="close btn-lg" data-bs-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body p-3 d-flex flex-column">
+                    <div class="card-body p-0">
+                        <div class="page-content container col-12 m-1 d-flex justify-content-center">
+                            <div class="container px-0">
+                                <div class="row">
+                                    <div class="col-12 col-lg-10 offset-lg-1">
+                                        <table class="table table-bordered">
+                                            <thead class="text-center">
+                                                <tr>
+                                                    <th scope="col" class="text-left">Tên</th>
+                                                    <th scope="col">Xem</th>
+                                                    <th scope="col">Thêm</th>
+                                                    <th scope="col">Sửa</th>
+                                                    <th scope="col">Xóa</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="data-permission">
+                                                <tr>
+                                                    <td>Mark</td>
+                                                    <td>Otto</td>
+                                                    <td></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class=" btn btn-danger btn-lg me-md-2" data-bs-dismiss="modal">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+}
+@section Script{
+    <script>
+        var lastPage = 1;
+        var pageCurrent = 1;
+        $(document).ready(function () {
+            CheckPermission();
+            $("body").on("click", ".pagination li a", function (event) {
+                event.preventDefault();
+                var page = $(this).attr('data-page');
+                Search(page);
+            });
+            $(".nav-link").removeClass("active");
+            $("#Account").addClass("active");
+        });
+        //PHAN QUYEN
+        let view;
+        let add;
+        let edit;
+        let dele;
+        function CheckPermission() {
+            $.ajax({
+                url: "/Admin/Account/CheckPermission",
+                type: "GET",
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (result) {
+                    add = result.Create;
+                    edit = result.Edit;
+                    dele = result.Delete;
+                    view = result.View;
+                    if (view == true)
+                        LoadData(null, 1);
+                    else
+                        $(".main-content-container").html('<div class="error"> <div class= "error__content" ><h2>500</h2><h3>Bạn không có quyền truy cập!</h3> <p>Liên hệ với Admin để biết thêm thông tin.</p><button type="button" class="btn btn-accent btn-pill"><a class="text-black" href="/Admin/Statistic/Index">Trang chủ</a></button></div></div>');
+                }
+            });
+        }
+        $(".add-button").click(function (e) {
+            if (add == false) {
+                toastr.error("Bạn không có quyền!");
+                $("#modal-add-edit").modal('toggle');
+            }
+        });
+        $(document).on('click', '.edit-button', function (e) {
+            if (edit == false) {
+                toastr.error("Bạn không có quyền!");
+                $("#modal-permission").modal('toggle');
+            }
+        });
+        $(document).on('click', '.delete-button', function (e) {
+            if (dele == false) {
+                toastr.error("Bạn không có quyền!");
+                $("#modal-delete").modal('toggle');
+            }
+        });
+
+        function GetRole(role) {
+            switch (role) {
+                case 0:
+                    return "Admin";
+                case 1:
+                    return "Nhân viên";
+                case 2:
+                    return "Khách hàng";
+                default:
+                    return "";
+            }
+        }
+        function LoadData(txtSearch, page) {
+            $.ajax({
+                url: "/Admin/Account/GetAll",
+                type: "GET",
+                data: { txtSearch: txtSearch, page: page },
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (result) {
+                    var count = 0;
+                    var html = '';
+                    $.each(result.data, function (key, item) {
+                        var ROLE = GetRole(item.Role);
+
+                        imgPath = '/wwwroot/ImageProducts/' + item.Avatar;
+                        count++;
+                        html += '<tr>';
+                        html += '<td class="align-middle">' + ((result.pageCurrent - 1) * result.pageSize + count) + '</td>';
+                        html += '<td class="align-middle">' + item.UserName + '</td>';
+                        html += '<td class="align-middle">' + item.Email + '</td>';
+                        html += '<td class="align-middle">' + ROLE + '</td>';
+                        html += '<td class="align-middle"><img src="' + imgPath + '" alt="" height="40"></td>';
+                        html += '<td class="align-middle d-flex justify-content-center ">';
+                        html += '<button type="button" class="btn btn-lg btn-info mr-1" data-bs-toggle="modal" data-bs-target="#modal-detail" onclick="Detail(' + item.ID_Account + ')"><i class="fas fa-eye"></i></button>';
+                        if (item.Role != 2)
+                            html += '<button type="button" class="edit-button btn btn-lg btn-info mr-1" data-bs-toggle="modal" data-bs-target="#modal-permission" onclick = "GetPermissionById(' + item.ID_Account + ')"><i class="fas fa-user-check"></i></button>';
+                        html += '<button type="button" class="delete-button btn btn-lg btn-info mr-1" data-bs-toggle="modal" data-bs-target="#modal-delete" onclick="return DeleteConfirm(' + item.ID_Account + ')"><i class="fas fa-lock"></i></button>';
+                        html += '</td>';
+                        html += '</tr>';
+                    });
+                    $('.tbody-light').html(html);
+                    //onclick = "GetPermissionById(' + item.ID_Account + ')"
+                    //create pagination
+                    var pagination_string = "";
+                    pageCurrent = result.pageCurrent;
+                    var numSize = result.numSize;
+                    lastPage = numSize;
+
+                    $('#dt-material-checkbox_info').text(result.data.length + '/' + result.all.length);
+
+                    //create button previous
+                    if (pageCurrent > 1) {
+                        var pagePrevious = pageCurrent - 1;
+                        pagination_string += '<li class="page-item"><a href="" class="page-link" data-page=' + pagePrevious + '>Previous</a></li>';
+                    }
+
+                    for (i = 1; i <= numSize; i++) {
+                        if (i == pageCurrent) {
+                            pagination_string += '<li class="page-item active"><a href="" class="page-link" data-page=' + i + '>' + pageCurrent + '</a></li>';
+                        } else {
+                            pagination_string += '<li class="page-item"><a href="" class="page-link" data-page=' + i + '>' + i + '</a></li>';
+                        }
+                    }
+
+                    //create button next
+                    if (pageCurrent > 0 && pageCurrent < numSize) {
+                        var pageNext = pageCurrent + 1;
+                        pagination_string += '<li class="page-item"><a href="" class="page-link"  data-page=' + pageNext + '>Next</a></li>';
+                    }
+                    $(".pagination").html(pagination_string);
+                },
+                error: function (errormessage) {
+                    toastr.error(errormessage.responseText);
+                }
+            });
+
+        }
+        function UploadImage() {
+            // Checking whether FormData is available in browser
+            if (window.FormData !== undefined) {
+
+                var fileUpload = $("#Avatar").get(0);
+                var files = fileUpload.files;
+
+                // Create FormData object
+                var fileData = new FormData();
+
+                // Looping over all files and add it to FormData object
+                for (var i = 0; i < files.length; i++) {
+                    fileData.append(files[i].name, files[i]);
+                }
+
+                $.ajax({
+                    url: '/Account/UploadFiles',
+                    type: "POST",
+                    contentType: false, // Not to set any content header
+                    processData: false, // Not to process data
+                    data: fileData,
+                    success: function (result) {
+                        return true;
+                    },
+                    error: function (err) {
+                        return false;
+                    }
+                });
+            } else {
+                return false;
+            }
+        }
+        function GetImage() {
+            var fileUpload = $("#Avatar").get(0);
+            var files = fileUpload.files;
+
+            // Create FormData object
+            var fileData = new FormData();
+
+            // Looping over all files and add it to FormData object
+            for (var i = 0; i < files.length; i++) {
+                fileData.append(i, files[i].name);
+            }
+            return fileData;
+        }
+        function Detail(ID) {
+            $.ajax({
+                url: "/Admin/Account/GetById/" + ID,
+                typr: "GET",
+                contentType: "application/json;charset=UTF-8",
+                dataType: "json",
+                success: function (result) {
+                    $('#userName-detail').text(result.UserName);
+                    $('#fullName-detail').text(result.FullName);
+                    $('#phone-detail').text(result.Phone);
+                    $('#address-detail').text(result.Address);
+                    $('#email-detail').text(result.Email);
+                    $('#role-detail').text(GetRole(result.Role))
+                    $("#avatar-detail").attr("src", '/wwwroot/ImageProducts/' + result.Avatar);
+                },
+                error: function (errormessage) {
+                    toastr.error(errormessage.responseText);
+                }
+            });
+        }
+        function Add() {
+            errorUserName();
+            errorPassword();
+            errorEmail();
+            errorPhone();
+            errorAvatar();
+
+            if (checkError)
+                return;
+
+            var fileData = GetImage();
+            let account = {};
+            account["UserName"] = $('#UserName').val();
+            account["Password"] = $('#Password').val();
+            account["FullName"] = $('#FullName').val();
+            account["Phone"] = $('#Phone').val();
+            account["Address"] = $('#Address').val();
+            account["Email"] = $('#Email').val();
+            account["Role"] = $('#Role').val();
+            account["Avatar"] = fileData.get(0);
+            account["Status"] = 1;
+
+            $.ajax({
+                url: "/Admin/Account/Create",
+                data: JSON.stringify(account),
+                type: "POST",
+                processData: false,
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (result) {
+                    if (result) {
+                        $('#modal-add-edit').modal('hide');
+                        UploadImage();
+                        Search(lastPage + 1);
+                        $('#modal-add').modal('hide');
+                        toastr.success('Thêm thành công!');
+                    }
+                    else {
+                        toastr.error('Thêm không thành thành công!');
+                        return false;
+                    }
+                },
+                error: function (errormessage) {
+                    alert(errormessage.responseText);
+                    toastr.error('Thêm không thành thành công!');
+                }
+            });
+        }
+        let id = 0;
+        function GetPermissionById(ID) {
+            id = ID;
+            ClearValidation();
+
+            $.ajax({
+                url: "/Admin/Account/GetPermissionById/",
+                typr: "GET",
+                data: { idAccount: ID },
+                contentType: "application/json;charset=UTF-8",
+                dataType: "json",
+                success: function (result) {
+                    var count = 0;
+                    var html = '';
+                    $.each(result.permission, function (key, item) {
+
+                        html += '<tr>';
+                        html += '<td>';
+                        html += item.Name;
+                        html += '</td>';
+                        html += '<td>';
+                        html += '<div class="form-check text-center">';
+                        result.permissionDetail[count].View == true ? html += '<input type="checkbox" class="form-check-input" id="view-' + item.ID_Permission + '-' + ID + '" checked>' : html += '<input type="checkbox" class="form-check-input" id="view-' + item.ID_Permission + '-' + ID + '">';
+                        html += '</div >';
+                        html += '</td>';
+                        html += '<td>';
+                        html += '<div class="form-check text-center">';
+                        result.permissionDetail[count].Create == true ? html += '<input type="checkbox" class="form-check-input" id="add-' + item.ID_Permission + '-' + ID + '" checked>' : html += '<input type="checkbox" class="form-check-input"" id="add-' + item.ID_Permission + '-' + ID + '">';
+                        html += '</div >';
+                        html += '</td>';
+                        html += '<td>';
+                        html += '<div class="form-check text-center">';
+                        result.permissionDetail[count].Edit == true ? html += '<input type="checkbox" class="form-check-input" id="edit-' + item.ID_Permission + '-' + ID + '" checked>' : html += '<input type="checkbox" class="form-check-input" id="edit-' + item.ID_Permission + '-' + ID + '">';
+                        html += '</div >';
+                        html += '</td>';
+                        html += '<td>';
+                        html += '<div class="form-check text-center">';
+                        result.permissionDetail[count].Delete == true ? html += '<input type="checkbox" class="form-check-input" id="delete-' + item.ID_Permission + '-' + ID + '" checked>' : html += '<input type="checkbox" class="form-check-input" id="delete-' + item.ID_Permission + '-' + ID + '">';
+                        html += '</div >';
+                        html += '</td>';
+                        html += '</tr>';
+                        count++;
+                    });
+                    $('#data-permission').html(html);
+                },
+                error: function (errormessage) {
+                    toastr.error(errormessage.responseText);
+                }
+            });
+            return false;
+        }
+        $(document).on('click', '.form-check-input', function (e) {
+            var idElement = this.id;
+            var listString = idElement.split('-');
+            var id = listString[1].toString();
+            var permissionName = listString[0].toString();
+            var idAccount = listString[2].toString();
+
+            if (permissionName == "add" || permissionName == "edit" || permissionName == "delete") {
+                if (this.checked == true)
+                    $('#view-' + id + '-' + idAccount).prop('checked', true);
+            }
+            if (permissionName == "view") {
+                if (this.checked == false) {
+                    $('#add-' + id + '-' + idAccount).prop('checked', false);
+                    $('#edit-' + id + '-' + idAccount).prop('checked', false);
+                    $('#delete-' + id + '-' + idAccount).prop('checked', false);
+                }
+            }
+            Edit(id, idAccount);
+            CheckPermission();
+        });
+        function Edit(id, idAccount) {
+            let permissionDetail = {};
+
+            permissionDetail["ID_Permission"] = id;
+            permissionDetail["ID_Account"] = idAccount;
+            permissionDetail["View"] = $('#view-' + id + '-' + idAccount).is(":checked");
+            permissionDetail["Create"] = $('#add-' + id + '-' + idAccount).is(":checked");
+            permissionDetail["Edit"] = $('#edit-' + id + '-' + idAccount).is(":checked");
+            permissionDetail["Delete"] = $('#delete-' + id + '-' + idAccount).is(":checked");
+            permissionDetail["Status"] = 1;
+
+            $.ajax({
+                url: "/Admin/Account/EditPermission",
+                data: JSON.stringify(permissionDetail),
+                type: "POST",
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (result) {
+                    toastr.success('Sửa thành công!');
+                },
+                error: function (errormessage) {
+                    toastr.error('Sửa không thành công!');
+                }
+            });
+        }
+        function DeleteConfirm(ID) {
+            id = ID;
+        }
+        function Delele(ID) {
+            $.ajax({
+                url: "/Admin/Account/Delete/" + ID,
+                type: "POST",
+                contentType: "application/json;charset=UTF-8",
+                dataType: "json",
+                success: function (result) {
+                    if (result) {
+                        Search(pageCurrent);
+                        toastr.success("Xóa thành công!");
+                    }
+                    else {
+                        toastr.error("Xóa không thành công!");
+                    }
+                },
+                error: function (errormessage) {
+                    toastr.error(errormessage.responseText);
+                }
+            });
+        }
+        function ClearTextBox() {
+            $('#UserName').val('');
+            $('#UserName').removeAttr("disabled");
+            $('#Password').val('');
+            $('#FullName').val('');
+            $('#Phone').val('');
+            $('#Address').val('');
+            $('#Email').val('');
+            $('#Role').val(2);
+            $('#Edit').hide();
+            $('#Add').show();
+            $('#Status').show();
+
+            ClearValidation();
+        }
+        function ClearValidation() {
+            $('#UserName').removeClass('is-invalid');
+            $('#UserName').removeClass('is-valid');
+            $('#Password').removeClass('is-invalid');
+            $('#Password').removeClass('is-valid');
+            $('#Avatar').removeClass('is-invalid');
+            $('#Avatar').removeClass('is-valid');
+            $("#imgPreview").attr("src", '/wwwroot/ImageProducts/no-image-icon-0.jpg');
+            $('#error_userName').hide();
+            $('#error_password').hide();
+            $('#error_avatar').hide();
+        }
+        $('#Avatar').change(function () {
+            const [file] = $('#Avatar').get(0).files;
+            if (file) {
+                imgPreview.src = URL.createObjectURL(file);
+            } else {
+                imgPreview.src = '/wwwroot/ImageProducts/no-image-icon-0.jpg';
+            }
+            errorAvatar();
+        });
+        function ResetPassword() {
+            $('#Password').val('abcd1234!');
+            errorPassword();
+        }
+        //Validations
+        let passwordRegex = /^\w.{8,}$/;
+        let phoneRegex = /^[0-9]{10}$/;
+        let emailRegex = /^(([^<>()[\]\\.,;:\s@@"]+(\.[^<>()[\]\\.,;:\s@@"]+)*)|(".+"))@@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+        let checkError = false;
+        const errorUserName = () => {
+            if ($('#UserName').val() == '') {
+                $('#error_userName').show();
+                $('#error_userName').addClass('invalid-feedback');
+                $('#error_userName').removeClass('valid-feedback');
+                $('#UserName').addClass('is-invalid');
+                $('#error_userName').text("Tên không được để trống!");
+                checkError = true;
+            } else {
+                $('#error_userName').hide();
+                $('#UserName').addClass('is-valid');
+                $('#UserName').removeClass('is-invalid');
+                checkError = false;
+            }
+        }
+        $('#UserName').keyup(() => {
+            errorUserName();
+        });
+        $('#UserName').keydown(() => {
+            errorUserName();
+        });
+        const errorPassword = () => {
+            if ($('#Password').val() == '') {
+                $('#error_password').show();
+                $('#error_password').addClass('invalid-feedback');
+                $('#error_password').removeClass('valid-feedback');
+                $('#Password').addClass('is-invalid');
+                $('#error_password').text("Mật khẩu không được để trống!");
+                checkError = true;
+            }
+            else if ($('#Password').val().length < 8) {
+                $('#error_password').show();
+                $('#error_password').addClass('invalid-feedback');
+                $('#error_password').removeClass('valid-feedback');
+                $('#Password').addClass('is-invalid');
+                $('#error_password').text("Mật khẩu dài hơn 8 kí tự!");
+                checkError = true;
+            }
+            else if (!passwordRegex.test($('#Password').val())) {
+                $('#error_password').show();
+                $('#error_password').addClass('invalid-feedback');
+                $('#error_password').removeClass('valid-feedback');
+                $('#Password').addClass('is-invalid');
+                $('#error_password').text("Mật khẩu có chữ, số và kí tự!");
+                checkError = true;
+            }
+            else {
+                $('#error_password').hide();
+                $('#Password').addClass('is-valid');
+                $('#Password').removeClass('is-invalid');
+                checkError = false;
+            }
+        }
+        $('#Password').keyup(() => {
+            errorPassword();
+        });
+        $('#Password').keydown(() => {
+            errorPassword();
+        });
+
+        const errorEmail = () => {
+            if ($('#Email').val() != '' && !emailRegex.test($('#Email').val())) {
+                $('#error_email').show();
+                $('#error_email').addClass('invalid-feedback');
+                $('#error_email').removeClass('valid-feedback');
+                $('#Email').addClass('is-invalid');
+                $('#error_email').text("Email không đúng định dạng!");
+                checkError = true;
+            } else if ($('#Email').val() != '') {
+                $('#error_email').hide();
+                $('#Email').addClass('is-valid');
+                $('#Email').removeClass('is-invalid');
+                checkError = false;
+            }
+        }
+        $('#Email').keyup(() => {
+            errorEmail();
+        });
+        $('#Email').keydown(() => {
+            errorEmail();
+        });
+        const errorPhone = () => {
+            if ($('#Phone').val() != '' && $('#Phone').val().length != 10) {
+                $('#error_phone').show();
+                $('#error_phone').addClass('invalid-feedback');
+                $('#error_phone').removeClass('valid-feedback');
+                $('#Phone').addClass('is-invalid');
+                $('#error_phone').text("SĐT có 10 số!");
+                checkError = true;
+            }
+            else if ($('#Phone').val() != '' && !phoneRegex.test($('#Phone').val())) {
+                $('#error_phone').show();
+                $('#error_phone').addClass('invalid-feedback');
+                $('#error_phone').removeClass('valid-feedback');
+                $('#Phone').addClass('is-invalid');
+                $('#error_phone').text("SĐT không đúng định dạng!");
+                checkError = true;
+            } else if ($('#Phone').val() != '') {
+                $('#error_phone').hide();
+                $('#Phone').addClass('is-valid');
+                $('#Phone').removeClass('is-invalid');
+                checkError = false;
+            }
+        }
+        $('#Phone').keyup(() => {
+            errorPhone();
+        });
+        $('#Phone').keydown(() => {
+            errorPhone();
+        });
+        const errorAvatar = () => {
+            if ($('#Avatar').get(0).files.length == 0) {
+                $('#error_avatar').show();
+                $('#error_avatar').addClass('invalid-feedback');
+                $('#error_avatar').removeClass('valid-feedback');
+                $('#Avatar').addClass('is-invalid');
+                $('#error_avatar').text("Ảnh dại diện không được để trống");
+                checkError = true;
+            } else {
+                $('#error_avatar').hide();
+                $('#Avatar').addClass('is-valid');
+                $('#Avatar').removeClass('is-invalid');
+                checkError = false;
+            }
+        }
+
+        const Search = (page) => {
+            var txtSearch = $("#txtSearch").val();
+            if (txtSearch != "") {
+                LoadData(txtSearch, page)
+            }
+            else {
+                LoadData(null, page);
+            }
+        }
+        $('#txtSearch').keyup(() => {
+            Search(1);
+        });
+        $('#txtSearch').keydown(() => {
+            Search(1);
+        });
+    </script>
+}

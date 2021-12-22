@@ -1,0 +1,469 @@
+﻿@using ElectronicDeviceShop.ViewModels.Suppliers
+@model IEnumerable<SupplierViewModel>
+@*@model CreateSupplierViewModel*@
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+<div class="main-content-container container-fluid px-4">
+    <!-- End Page Header -->
+    <!-- Default Light Table -->
+    <div class="row">
+        <div class="col">
+            <div class="card card-small mb-4 mt-5">
+                <div class="card-header row no-gutters py-4 d-flex justify-content-between fw-bold col-12">
+                    <h3 class="m-0 col-sm-6 col-md-9 col-lg-2 text-black text-center text-sm-left">Nhà cung cấp</h3>
+                    <div class="input-group mb-3 col-sm-6 col-md-9 col-lg-7">
+                        <div class="input-group input-group-seamless">
+                            <span class="input-group-prepend">
+                                <span class="input-group-text">
+                                    <i class="fas fa-search"></i>
+                                </span>
+                            </span>
+                            <input type="text" class="form-control" id="txtSearch" placeholder="Tìm kiếm" aria-label="Recipient's username" aria-describedby="basic-addon2">
+                        </div>
+                    </div>
+                    <button type="button" class="add-button col-sm-6 col-md-2 col-lg-1 mb-2 btn btn-lg btn-success mr-1" data-bs-toggle="modal" data-bs-target="#modal-add-edit" onclick="ClearTextBox();"><i class="fas fa-plus "></i></button>
+                </div>
+                <div class="card-body p-0 text-center align-middle table-responsive">
+                    <table class="table mb-0" id="dataTable">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="border-0">#</th>
+                                <th class="border-0">@Html.DisplayNameFor(model => model.Name)</th>
+                                <th class="border-0">@Html.DisplayNameFor(model => model.UrlSlug)</th>
+                                <th class="border-0">@Html.DisplayNameFor(model => model.Icon)</th>
+                                <th class="border-0">Chức năng</th>
+                            </tr>
+                        </thead>
+                        <tbody class="tbody-light">
+                            @*AJAX LOAD*@
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card-footer col no-gutters py-4 d-flex flex-column text-center fw-bold col-12 border-top">
+                    <div class="dataTables_info" id="dt-material-checkbox_info" role="status" aria-live="polite"></div>
+                    <div class="dataTables_paginate paging_simple_numbers d-flex justify-content-center" id="dt-material-checkbox_paginate">
+                        <ul class="pagination">
+                            @*Pagination*@
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End Default Light Table -->
+</div>
+<!-- Modal -->
+<!-- modal detail -->
+<div class="modal" id="modal-detail" tabindex="-1 " role="dialog" aria-labelledby="mediumModalLabel " aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered " role="document">
+        <div class="modal-content ">
+            <div class="modal-header ">
+                <div class="col-10 page-header border-bottom-0 ">
+                    <h3 class="page-title ">Chi tiết Nhà cung cấp</h3>
+                </div>
+                <button type="button" class="close btn-lg" data-bs-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body d-flex justify-content-center">
+                <img src="https://i2.wp.com/www.icon0.com/wp-content/uploads/2021/05/stock-photo-tick-icon-sign-design-13148.jpg?fit=400%2C400&ssl=1 " height="80" alt=" " class="col-6 p-0 img-fluid" id="icon-detail">
+                <div class="d-flex flex-column justify-content-center ml-3 col-6 ">
+                    <span class="fw-bold fs-1 text-wrap" style="word-wrap: break-word;" id="name-detail">James Khan</span>
+                    <small class="text-muted fs-3 text-wrap" style="word-wrap: break-word;" id="url-detail">21 March 2011</small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class=" btn btn-danger btn-lg me-md-2" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section modal{
+    @Html.Partial("Create")
+    @Html.Partial("Delete")
+
+}
+@section Script{
+    <script>
+        var lastPage = 1;
+        var pageCurrent = 1;
+        $(document).ready(function () {
+            CheckPermission();
+
+            $("body").on("click", ".pagination li a", function (event) {
+                event.preventDefault();
+                var page = $(this).attr('data-page');
+                Search(page);
+            });
+            $(".nav-link").removeClass("active");
+            $("#Supplier").addClass("active");
+        });
+        //PHAN QUYEN
+        let view;
+        let add;
+        let edit;
+        let dele;
+        function CheckPermission() {
+            $.ajax({
+                url: "/Admin/Supplier/CheckPermission",
+                type: "GET",
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (result) {
+                    add = result.Create;
+                    edit = result.Edit;
+                    dele = result.Delete;
+                    view = result.View;
+                    if (view == true)
+                        LoadData(null, 1);
+                    else
+                        $(".main-content-container").html('<div class="error"> <div class= "error__content" ><h2>500</h2><h3>Bạn không có quyền truy cập!</h3> <p>Liên hệ với Admin để biết thêm thông tin.</p><button type="button" class="btn btn-accent btn-pill"><a class="text-black" href="/Admin/Statistic/Index">Trang chủ</a></button></div></div>');
+
+                }
+            });
+        }
+        $(".add-button").click(function (e) {
+            if (add == false) {
+                toastr.error("Bạn không có quyền!");
+                $("#modal-add-edit").modal('toggle');
+            }
+        });
+        $(document).on('click', '.edit-button', function (e) {
+            if (edit == false) {
+                toastr.error("Bạn không có quyền!");
+                $("#modal-add-edit").modal('toggle');
+            }
+        });
+        $(document).on('click', '.delete-button', function (e) {
+            if (dele == false) {
+                toastr.error("Bạn không có quyền!");
+                $("#modal-delete").modal('toggle');
+            }
+        });
+        function LoadData(txtSearch, page) {
+            $.ajax({
+                url: "/Supplier/GetAll",
+                type: "GET",
+                data: { txtSearch: txtSearch, page: page },
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (result) {
+                    var count = 0;
+                    var html = '';
+                    $.each(result.data, function (key, item) {
+                        imgPath = '/wwwroot/ImageProducts/' + item.Icon;
+                        count++;
+                        html += '<tr>';
+                        html += '<td class="align-middle">' + ((result.pageCurrent - 1) * result.pageSize + count) + '</td>';
+                        html += '<td class="align-middle">' + item.Name + '</td>';
+                        html += '<td class="align-middle">' + item.UrlSlug + '</td>';
+                        html += '<td class="align-middle"><img src="' + imgPath + '" alt="" height="40"></td>';
+                        html += '<td class="align-middle d-flex justify-content-center ">';
+                        html += '<button type="button" class="btn btn-lg btn-info mr-1" data-bs-toggle="modal" data-bs-target="#modal-detail" onclick="Detail(' + item.ID_Supplier + ')"><i class="fas fa-eye"></i></button>';
+                        html += '<button type="button" class="edit-button btn btn-lg btn-info mr-1" data-bs-toggle="modal" data-bs-target="#modal-add-edit" onclick="GetById(' + item.ID_Supplier + ')"><i class="fas fa-pencil-alt"></i></button>';
+                        html += '<button type="button" class="delete-button btn btn-lg btn-info mr-1" data-bs-toggle="modal" data-bs-target="#modal-delete" onclick="return DeleteConfirm(' + item.ID_Supplier + ')"><i class="fas fa-trash-alt"></i></button>';
+                        html += '</td>';
+                        html += '</tr>';
+                    });
+                    $('.tbody-light').html(html);
+
+                    //create pagination
+                    var pagination_string = "";
+                    pageCurrent = result.pageCurrent;
+                    var numSize = result.numSize;
+                    lastPage = numSize;
+
+                    $('#dt-material-checkbox_info').text(result.data.length + '/' + result.all.length);
+
+                    //create button previous
+                    if (pageCurrent > 1) {
+                        var pagePrevious = pageCurrent - 1;
+                        pagination_string += '<li class="page-item"><a href="" class="page-link" data-page=' + pagePrevious + '>Previous</a></li>';
+                    }
+
+                    for (i = 1; i <= numSize; i++) {
+                        if (i == pageCurrent) {
+                            pagination_string += '<li class="page-item active"><a href="" class="page-link" data-page=' + i + '>' + pageCurrent + '</a></li>';
+                        } else {
+                            pagination_string += '<li class="page-item"><a href="" class="page-link" data-page=' + i + '>' + i + '</a></li>';
+                        }
+                    }
+
+                    //create button next
+                    if (pageCurrent > 0 && pageCurrent < numSize) {
+                        var pageNext = pageCurrent + 1;
+                        pagination_string += '<li class="page-item"><a href="" class="page-link"  data-page=' + pageNext + '>Next</a></li>';
+                    }
+                    $(".pagination").html(pagination_string);
+                },
+                error: function (errormessage) {
+                    toastr.error(errormessage.responseText);
+                }
+            });
+
+        }
+        function UploadImage() {
+            // Checking whether FormData is available in browser
+            if (window.FormData !== undefined) {
+
+                var fileUpload = $("#Icon").get(0);
+                var files = fileUpload.files;
+
+                // Create FormData object
+                var fileData = new FormData();
+
+                // Looping over all files and add it to FormData object
+                for (var i = 0; i < files.length; i++) {
+                    fileData.append(files[i].name, files[i]);
+                }
+
+                $.ajax({
+                    url: '/Supplier/UploadFiles',
+                    type: "POST",
+                    contentType: false, // Not to set any content header
+                    processData: false, // Not to process data
+                    data: fileData,
+                    success: function (result) {
+                        return true;
+                    },
+                    error: function (err) {
+                        return false;
+                    }
+                });
+            } else {
+                return false;
+            }
+        }
+        function GetImage() {
+            var fileUpload = $("#Icon").get(0);
+            var files = fileUpload.files;
+
+            // Create FormData object
+            var fileData = new FormData();
+
+            // Looping over all files and add it to FormData object
+            for (var i = 0; i < files.length; i++) {
+                fileData.append(i, files[i].name);
+            }
+            return fileData;
+        }
+        function Detail(ID) {
+            $.ajax({
+                url: "/Supplier/GetById/" + ID,
+                typr: "GET",
+                contentType: "application/json;charset=UTF-8",
+                dataType: "json",
+                success: function (result) {
+                    $('#name-detail').text(result.Name);
+                    $('#url-detail').text(result.UrlSlug);
+                    $("#icon-detail").attr("src", '/wwwroot/ImageProducts/' + result.Icon);
+                },
+                error: function (errormessage) {
+                    toastr.error(errormessage.responseText);
+                }
+            });
+        }
+        function Add() {
+            errorName();
+            errorIcon();
+
+            if (checkError)
+                return;
+
+            var fileData = GetImage();
+            let supplier = {};
+            supplier["Name"] = $('#Name').val();
+            supplier["UrlSlug"] = $('#UrlSlug').val();
+            supplier["Icon"] = fileData.get(0);
+            supplier["Status"] = 1;
+
+            $.ajax({
+                url: "/Supplier/Create",
+                data: JSON.stringify(supplier),
+                type: "POST",
+                processData: false,
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (result) {
+                    if (result) {
+                        $('#modal-add-edit').modal('hide');
+                        UploadImage();
+                        Search(lastPage + 1);
+                        toastr.success('Thêm thành công!');
+                    }
+                    else {
+                        toastr.error('Thêm không thành thành công!');
+                        return false;
+                    }
+                },
+                error: function (errormessage) {
+                    alert(errormessage.responseText);
+                    toastr.error('Thêm không thành thành công!');
+                }
+            });
+        }
+        let id = 0;
+        function GetById(ID) {
+            id = ID;
+            ClearValidation();
+
+            $.ajax({
+                url: "/Supplier/GetById/" + ID,
+                typr: "GET",
+                contentType: "application/json;charset=UTF-8",
+                dataType: "json",
+                success: function (result) {
+                    $('#Name').val(result.Name);
+                    $('#UrlSlug').val(result.UrlSlug);
+                    $("#imgPreview").attr("src", '/wwwroot/ImageProducts/' + result.Icon);
+                    $('#Add').hide();
+                    $('#Edit').show();
+                },
+                error: function (errormessage) {
+                    toastr.error(errormessage.responseText);
+                }
+            });
+            return false;
+        }
+        function Edit() {
+            errorName();
+            if (checkError)
+                return;
+
+            var fileData = GetImage();
+            let supplier = {};
+            supplier["ID_Supplier"] = id;
+            supplier["Name"] = $('#Name').val();
+            supplier["UrlSlug"] = $('#UrlSlug').val();
+            if ($("#Icon").get(0).files.length != 0)
+                supplier["Icon"] = fileData.get(0);
+            else
+                supplier["Icon"] = $("#imgPreview").attr('src').split('/')[3];
+
+            $.ajax({
+                url: "/Supplier/Edit",
+                data: JSON.stringify(supplier),
+                type: "POST",
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (result) {
+                    $('#modal-add-edit').modal('hide');
+                    UploadImage();
+                    Search(pageCurrent);
+                    ClearTextBox();
+                    toastr.success('Sửa thành công!');
+                },
+                error: function (errormessage) {
+                    toastr.error('Sửa không thành công!');
+                }
+            });
+        }
+        function DeleteConfirm(ID) {
+            id = ID;
+        }
+        function Delele(ID) {
+            $.ajax({
+                url: "/Supplier/Delete/" + ID,
+                type: "POST",
+                contentType: "application/json;charset=UTF-8",
+                dataType: "json",
+                success: function (result) {
+                    if (result) {
+                        Search(pageCurrent);
+                        toastr.success("Xóa thành công!");
+                    }
+                    else {
+                        toastr.error("Xóa không thành công!");
+                    }
+                },
+                error: function (errormessage) {
+                    toastr.error(errormessage.responseText);
+                }
+            });
+        }
+        function ClearTextBox() {
+            $('#Name').val('');
+            $('#UrlSlug').val('');
+            $('#Edit').hide();
+            $('#Add').show();
+            $('#Status').show();
+            ClearValidation();
+        }
+        function ClearValidation() {
+            $('#Name').removeClass('is-invalid');
+            $('#Name').removeClass('is-valid');
+            $('#Icon').removeClass('is-invalid');
+            $('#Icon').removeClass('is-valid');
+            $("#imgPreview").attr("src", '/wwwroot/ImageProducts/no-image-icon-0.jpg');
+            $('#error_name').hide();
+            $('#error_icon').hide();
+        }
+        Icon.onchange = evt => {
+            const [file] = Icon.files;
+            if (file) {
+                imgPreview.src = URL.createObjectURL(file);
+            } else {
+                imgPreview.src = '/wwwroot/ImageProducts/no-image-icon-0.jpg';
+            }
+            errorIcon();
+        }
+
+        //Validations
+        let checkError = false;
+        const errorName = () => {
+            if ($('#Name').val() == '') {
+                $('#error_name').show();
+                $('#error_name').addClass('invalid-feedback');
+                $('#error_name').removeClass('valid-feedback');
+                $('#Name').addClass('is-invalid');
+                $('#error_name').text("Tên không được để trống!");
+                checkError = true;
+            } else {
+                $('#error_name').hide();
+                $('#Name').addClass('is-valid');
+                $('#Name').removeClass('is-invalid');
+                checkError = false;
+            }
+        }
+        $('#Name').keyup(() => {
+            errorName();
+            changeUrl('Name', 'UrlSlug');
+        });
+        $('#Name').keydown(() => {
+            errorName();
+            changeUrl('Name', 'UrlSlug');
+        });
+        const errorIcon = () => {
+            if ($('#Icon').get(0).files.length == 0) {
+                $('#error_icon').show();
+                $('#error_icon').addClass('invalid-feedback');
+                $('#error_icon').removeClass('valid-feedback');
+                $('#Icon').addClass('is-invalid');
+                $('#error_icon').text("Biểu tượng không được để trống");
+                checkError = true;
+            } else {
+                $('#error_icon').hide();
+                $('#Icon').addClass('is-valid');
+                $('#Icon').removeClass('is-invalid');
+                checkError = false;
+            }
+        }
+
+        const Search = (page) => {
+            var txtSearch = $("#txtSearch").val();
+            if (txtSearch != "") {
+                LoadData(txtSearch, page)
+            }
+            else {
+                LoadData(null, page);
+            }
+        }
+        $('#txtSearch').keyup(() => {
+            Search(1);
+        });
+        $('#txtSearch').keydown(() => {
+            Search(1);
+        });
+    </script>
+}

@@ -1,0 +1,805 @@
+﻿@using ElectronicDeviceShop.ViewModels.Products
+@model IEnumerable<ProductViewModel>
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="main-content-container container-fluid px-4">
+    <!-- Default Light Table -->
+    <div class="row">
+        <div class="col">
+            <div class="card card-small mb-4 mt-5">
+                <div class="card-header row no-gutters py-4 d-flex justify-content-between fw-bold col-12">
+                    <h3 class="m-0 col-sm-6 col-md-9 col-lg-2 text-black text-center text-sm-left">Sản phẩm</h3>
+                    <div class="input-group mb-3 col-sm-6 col-md-9 col-lg-7">
+                        <div class="input-group input-group-seamless">
+                            <span class="input-group-prepend">
+                                <span class="input-group-text">
+                                    <i class="fas fa-search"></i>
+                                </span>
+                            </span>
+                            <input type="text" class="form-control" id="txtSearch" placeholder="Tìm kiếm" aria-label="Recipient's username" aria-describedby="basic-addon2">
+                        </div>
+                    </div>
+                    <button type="button" class="add-button col-sm-6 col-md-2 col-lg-1 mb-2 btn btn-lg btn-success mr-1" data-bs-toggle="modal" data-bs-target="#modal-add-edit" onclick="ClearTextBox();"><i class="fas fa-plus "></i></button>
+                </div>
+                <div class="card-body p-0 text-center align-middle table-responsive-lg">
+                    <table class="table mb-0 ">
+                        <thead class="bg-light ">
+                            <tr>
+                                <th class="border-0">#</th>
+                                <th class="border-0">@Html.DisplayNameFor(model => model.Name)</th>
+                                <th class="border-0">@Html.DisplayNameFor(model => model.Price)</th>
+                                <th class="border-0">@Html.DisplayNameFor(model => model.Amount)</th>
+                                <th class="border-0">@Html.DisplayNameFor(model => model.Origin)</th>
+                                <th class="border-0">@Html.DisplayNameFor(model => model.Image)</th>
+                                <th class="border-0">Chức năng</th>
+                            </tr>
+                        </thead>
+                        <tbody class="tbody-light">
+                            @*DATA*@
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card-footer col no-gutters py-4 d-flex flex-column text-center fw-bold col-12 border-top">
+                    <div class="dataTables_info" id="dt-material-checkbox_info" role="status" aria-live="polite">Showing 1 to 10 of 57 entries</div>
+                    <div class="dataTables_paginate paging_simple_numbers d-flex justify-content-center" id="dt-material-checkbox_paginate">
+                        <ul class="pagination">
+                            @*Pagination*@
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End Default Light Table -->
+    <!-- Modal -->
+    <!-- modal detail -->
+    <div class="modal" id="modal-detail" tabindex="-1 " role="dialog" aria-labelledby="mediumModalLabel " aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered " role="document">
+            <div class="modal-content ">
+                <div class="modal-header p-3">
+                    <div class="col-10 border-bottom-0 ">
+                        <h3 class="page-title">Chi tiết Sản phẩm</h3>
+                    </div>
+                    <button type="button" class="close btn-lg" data-bs-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body p-3 d-flex flex-column">
+                    <div class="text-center">
+                        <img class="img-fluid" id="image-detail" height="50%" width="50%" src="#" />
+                    </div>
+                    <div class="card-body p-0">
+                        <table class="table table-bordered" style="table-layout: fixed;" id="product-detail">
+                            <tr>
+                                <th class="col-3" style="word-wrap: break-word;">Tên</th>
+                                <td style="word-wrap: break-word;" id="name-detail"></td>
+                            </tr>
+                            <tr>
+                                <th class="col-3" style="word-wrap: break-word;">URL</th>
+                                <td style="word-wrap: break-word;" id="url-detail"></td>
+                            </tr>
+                            <tr>
+                                <th class="col-3" style="word-wrap: break-word;">Giá</th>
+                                <td style="word-wrap: break-word;" id="price-detail"></td>
+                            </tr>
+                            <tr>
+                                <th class="col-3" style="word-wrap: break-word;">Model</th>
+                                <td style="word-wrap: break-word;" id="model-detail"></td>
+                            </tr>
+                            <tr>
+                                <th class="col-3" style="word-wrap: break-word;">Số lượng</th>
+                                <td style="word-wrap: break-word;" id="amount-detail"></td>
+                            </tr>
+                            <tr>
+                                <th class="col-3" style="word-wrap: break-word;">Bảo hành</th>
+                                <td style="word-wrap: break-word;" id="guarantee-detail"></td>
+                            </tr>
+                            <tr>
+                                <th class="col-3" style="word-wrap: break-word;">Suất xứ</th>
+                                <td style="word-wrap: break-word;" id="origin-detail"></td>
+                            </tr>
+                            <tr>
+                                <th class="col-3" style="word-wrap: break-word;">Giảm giá</th>
+                                <td style="word-wrap: break-word;" id="discount-detail"></td>
+                            </tr>
+                            <tr>
+                                <th class="col-3" style="word-wrap: break-word;">Mô tả ngắn</th>
+                                <td style="word-wrap: break-word;" id="shortDescription-detail"></td>
+                            </tr>
+                            <tr>
+                                <th class="col-3" style="word-wrap: break-word; ">Chi tiết</th>
+                                <td><div class="overflow-scroll" id="detail-detail" style="height:200px"></div></td>
+                            </tr>
+                            <tr>
+                                <th class="col-3" style="word-wrap: break-word;">Danh mục</th>
+                                <td style="word-wrap: break-word;" id="category-detail"></td>
+                            </tr>
+                            <tr>
+                                <th class="col-3" style="word-wrap: break-word;">Nhà cung cấp</th>
+                                <td style="word-wrap: break-word;" id="supplier-detail"></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class=" btn btn-danger btn-lg me-md-2" data-bs-dismiss="modal">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section modal{
+    @Html.Partial("Create")
+    @Html.Partial("Delete")
+
+}
+
+@section Script{
+    <script>
+        var lastPage = 1;
+        var pageCurrent = 1;
+        let formatter = new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'VND' });
+        let money = new Intl.NumberFormat({ style: 'currency', currency: 'VND' });
+
+        $(document).ready(function () {
+            CheckPermission();
+
+            $("body").on("click", ".pagination li a", function (event) {
+                event.preventDefault();
+                var page = $(this).attr('data-page');
+                Search(page);
+            });
+            $(".nav-link").removeClass("active");
+            $("#Product").addClass("active");
+            CKEDITOR.replace('editor1');
+
+        });
+
+        //PHAN QUYEN
+        let view;
+        let add;
+        let edit;
+        let dele;
+        function CheckPermission() {
+            $.ajax({
+                url: "/Admin/Product/CheckPermission",
+                type: "GET",
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (result) {
+                    add = result.Create;
+                    edit = result.Edit;
+                    dele = result.Delete;
+                    view = result.View;
+                    if (view == true)
+                        LoadData(null, 1);
+                    else
+                        $(".main-content-container").html('<div class="error"> <div class= "error__content" ><h2>500</h2><h3>Bạn không có quyền truy cập!</h3> <p>Liên hệ với Admin để biết thêm thông tin.</p><button type="button" class="btn btn-accent btn-pill"><a class="text-black" href="/Admin/Statistic/Index">Trang chủ</a></button></div></div>');
+
+                }
+            });
+        }
+        $(".add-button").click(function (e) {
+            if (add == false) {
+                toastr.error("Bạn không có quyền!");
+                $("#modal-add-edit").modal('toggle');
+            }
+        });
+        $(document).on('click', '.edit-button', function (e) {
+            if (edit == false) {
+                toastr.error("Bạn không có quyền!");
+                $("#modal-add-edit").modal('toggle');
+            }
+        });
+        $(document).on('click', '.delete-button', function (e) {
+            if (dele == false) {
+                toastr.error("Bạn không có quyền!");
+                $("#modal-delete").modal('toggle');
+            }
+        });
+        //MAIN
+        function LoadSupCate() {
+            $.ajax({
+                url: "/Admin/Product/GetSupGetCate",
+                type: "GET",
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (result) {
+                    var html = '';
+                    $.each(result.category, function (key, item) {
+                        html += '<option selected="" value="' + item.ID + '">' + item.Name + '</option>';
+                    });
+                    $('#Categories').html(html);
+
+                    html = '';
+                    $.each(result.supplier, function (key, item) {
+                        html += '<option selected="" value="' + item.ID + '">' + item.Name + '</option>';
+                    });
+                    $('#Suppliers').html(html);
+                }
+            });
+        }
+        function LoadData(txtSearch, page) {
+            $.ajax({
+                url: "/Admin/Product/GetAll",
+                type: "GET",
+                data: { txtSearch: txtSearch, page: page },
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (result) {
+                    var count = 0;
+                    var html = '';
+                    $.each(result.data, function (key, item) {
+                        imgPath = '/wwwroot/ImageProducts/' + item.Image;
+                        count++;
+                        html += '<tr>';
+                        html += '<td class="align-middle">' + ((result.pageCurrent - 1) * result.pageSize + count) + '</td>';
+                        html += '<td class="align-middle">' + item.Name + '</td>';
+                        html += '<td class="align-middle">' + formatter.format(item.Price) + '</td>';
+                        html += '<td class="align-middle">' + item.Amount + '</td>';
+                        html += '<td class="align-middle">' + item.Origin + '</td>';
+                        html += '<td class="align-middle"><img src="' + imgPath + '" alt="" height="40"></td>';
+                        html += '<td class="align-middle d-flex justify-content-center ">';
+                        html += '<button type="button" class="view-button btn btn-lg btn-info mr-1" data-bs-toggle="modal" data-bs-target="#modal-detail" onclick="Detail(' + item.ID_Product + ')"><i class="fas fa-eye"></i></button>';
+                        html += '<button type="button" class="edit-button btn btn-lg btn-info mr-1" data-bs-toggle="modal" data-bs-target="#modal-add-edit" onclick="GetById(' + item.ID_Product + ')"><i class="fas fa-pencil-alt"></i></button>';
+                        html += '<button type="button" class="delete-button btn btn-lg btn-info mr-1" data-bs-toggle="modal" data-bs-target="#modal-delete" onclick="return DeleteConfirm(' + item.ID_Product + ')"><i class="fas fa-trash-alt"></i></button>';
+                        html += '</td>';
+                        html += '</tr>';
+                    });
+                    $('.tbody-light').html(html);
+
+                    //create pagination
+                    var pagination_string = "";
+                    pageCurrent = result.pageCurrent;
+                    var numSize = result.numSize;
+                    lastPage = numSize;
+
+                    $('#dt-material-checkbox_info').text(result.data.length + '/' + result.all.length);
+
+                    //create button previous
+                    if (pageCurrent > 1) {
+                        var pagePrevious = pageCurrent - 1;
+                        pagination_string += '<li class="page-item"><a href="" class="page-link" data-page=' + pagePrevious + '>Previous</a></li>';
+                    }
+
+                    for (i = 1; i <= numSize; i++) {
+                        if (i == pageCurrent) {
+                            pagination_string += '<li class="page-item active"><a href="" class="page-link" data-page=' + i + '>' + pageCurrent + '</a></li>';
+                        } else {
+                            pagination_string += '<li class="page-item"><a href="" class="page-link" data-page=' + i + '>' + i + '</a></li>';
+                        }
+                    }
+
+                    //create button next
+                    if (pageCurrent > 0 && pageCurrent < numSize) {
+                        var pageNext = pageCurrent + 1;
+                        pagination_string += '<li class="page-item"><a href="" class="page-link"  data-page=' + pageNext + '>Next</a></li>';
+                    }
+                    $(".pagination").html(pagination_string);
+                },
+                error: function (errormessage) {
+                    toastr.error(errormessage.responseText);
+                }
+            });
+
+        }
+        function UploadImage() {
+            // Checking whether FormData is available in browser
+            if (window.FormData !== undefined) {
+
+                var fileUpload = $("#Image").get(0);
+                var files = fileUpload.files;
+
+                // Create FormData object
+                var fileData = new FormData();
+
+                // Looping over all files and add it to FormData object
+                for (var i = 0; i < files.length; i++) {
+                    fileData.append(files[i].name, files[i]);
+                }
+
+                $.ajax({
+                    url: '/Admin//Product/UploadFiles',
+                    type: "POST",
+                    contentType: false, // Not to set any content header
+                    processData: false, // Not to process data
+                    data: fileData,
+                    success: function (result) {
+                        return true;
+                    },
+                    error: function (err) {
+                        return false;
+                    }
+                });
+            } else {
+                return false;
+            }
+        }
+        function GetImage() {
+            var fileUpload = $("#Image").get(0);
+            var files = fileUpload.files;
+
+            // Create FormData object
+            var fileData = new FormData();
+
+            // Looping over all files and add it to FormData object
+            for (var i = 0; i < files.length; i++) {
+                fileData.append(i, files[i].name);
+            }
+            return fileData;
+        }
+        function Detail(ID) {
+            $.ajax({
+                url: "/Admin/Product/GetById/" + ID,
+                typr: "GET",
+                contentType: "application/json;charset=UTF-8",
+                dataType: "json",
+                success: function (result) {
+                    $('#name-detail').text(result.product.Name);
+                    $('#url-detail').text(result.product.UrlSlug);
+                    $('#price-detail').text(result.product.Price);
+                    $('#model-detail').text(result.product.Model);
+                    $('#amount-detail').text(result.product.Amount);
+                    $('#guarantee-detail').text(result.product.Guarantee);
+                    $('#origin-detail').text(result.product.Origin);
+                    $('#discount-detail').text(result.product.Discount);
+                    $('#shortDescription-detail').text(result.product.ShortDescription);
+                    $('#detail-detail').text(result.product.Detail);
+                    $('#supplier-detail').text(result.supplier);
+                    $('#category-detail').text(result.category);
+                    $("#image-detail").attr("src", '/wwwroot/ImageProducts/' + result.product.Image);
+                },
+                error: function (errormessage) {
+                    toastr.error(errormessage.responseText);
+                }
+            });
+        }
+        function Add() {
+            errorName();
+            errorPrice();
+            errorModel();
+            errorAmount();
+            errorGuarantee();
+            errorDiscount();
+            errorImage();
+
+            if (checkError)
+                return;
+            var fileData = GetImage();
+            let product = {};
+            product["Name"] = $('#Name').val();
+            product["UrlSlug"] = $('#UrlSlug').val();
+            product["Price"] = parseInt($('#Price').val());
+            product["Model"] = $('#Model').val();
+            product["Amount"] = parseInt($('#Amount').val());
+            product["Guarantee"] = parseInt($('#Guarantee').val());
+            product["Origin"] = $('#Origin').val();
+            product["Discount"] = parseInt($('#Discount').val());
+            product["ShortDescription"] = $('#ShortDescription').val();
+            //product["Detail"] = $('#Detail').val();
+            product["Detail"] = CKEDITOR.instances['editor1'].getData();
+            product["ID_Category"] = parseInt($('#Categories').val());
+            product["ID_Supplier"] = parseInt($('#Suppliers').val());
+            product["Image"] = fileData.get(0);
+            product["Status"] = 1;
+
+            $.ajax({
+                url: "/Admin/Product/Create",
+                data: JSON.stringify(product),
+                type: "POST",
+                processData: false,
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (result) {
+                    if (result) {
+                        $('#modal-add-edit').modal('hide');
+                        UploadImage();
+                        Search(lastPage + 1);
+                        toastr.success('Thêm thành công!');
+                    }
+                    else {
+                        toastr.error('Thêm không thành thành công!');
+                        return false;
+                    }
+                },
+                error: function (errormessage) {
+                    alert(errormessage.responseText);
+                    toastr.error('Thêm không thành thành công!');
+                }
+            });
+        }
+        let id = 0;
+        function GetById(ID) {
+            id = ID;
+            ClearValidation();
+            LoadSupCate();
+            $.ajax({
+                url: "/Admin/Product/GetById/" + ID,
+                typr: "GET",
+                contentType: "application/json;charset=UTF-8",
+                dataType: "json",
+                success: function (result) {
+                    $('#Name').val(result.product.Name);
+                    $('#UrlSlug').val(result.product.UrlSlug);
+                    $('#Price').val(result.product.Price);
+                    $('#Model').val(result.product.Model);
+                    $('#Amount').val(result.product.Amount);
+                    $('#Guarantee').val(result.product.Guarantee);
+                    $('#Origin').val(result.product.Origin);
+                    $('#Discount').val(result.product.Discount);
+                    $('#ShortDescription').val(result.product.ShortDescription);
+                    $('#Detail').val(result.product.Detail);
+                    CKEDITOR.instances['editor1'].setData(result.product.Detail);
+                    $('#Categories').val(result.product.ID_Category);
+                    $('#Suppliers').val(result.product.ID_Supplier);
+                    $("#imgPreview").attr("src", '/wwwroot/ImageProducts/' + result.product.Image);
+                    $('#Add').hide();
+                    $('#Edit').show();
+                },
+                error: function (errormessage) {
+                    toastr.error(errormessage.responseText);
+                }
+            });
+            return false;
+        }
+        function Edit() {
+            errorName();
+            errorPrice();
+            errorModel();
+            errorAmount();
+            errorGuarantee();
+            errorDiscount();
+            if (checkError)
+                return;
+
+            var fileData = GetImage();
+            let product = {};
+            product["ID_Product"] = id;
+            product["Name"] = $('#Name').val();
+            product["UrlSlug"] = $('#UrlSlug').val();
+            product["Price"] = parseInt($('#Price').val());
+            product["Model"] = $('#Model').val();
+            product["Amount"] = parseInt($('#Amount').val());
+            product["Guarantee"] = parseInt($('#Guarantee').val());
+            product["Origin"] = $('#Origin').val();
+            product["Discount"] = parseInt($('#Discount').val());
+            product["ShortDescription"] = $('#ShortDescription').val();
+            product["Detail"] = CKEDITOR.instances['editor1'].getData();
+            product["ID_Category"] = parseInt($('#Categories').val());
+            product["ID_Supplier"] = parseInt($('#Suppliers').val());
+            if ($("#Image").get(0).files.length != 0)
+                product["Image"] = fileData.get(0);
+            else
+                product["Image"] = $("#imgPreview").attr('src').split('/')[3];
+
+            $.ajax({
+                url: "/Admin/Product/Edit",
+                data: JSON.stringify(product),
+                type: "POST",
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (result) {
+                    $('#modal-add-edit').modal('hide');
+                    UploadImage();
+                    Search(pageCurrent);
+                    ClearTextBox();
+                    toastr.success('Sửa thành công!');
+                },
+                error: function (errormessage) {
+                    toastr.error('Sửa không thành công!');
+                }
+            });
+        }
+        function DeleteConfirm(ID) {
+            id = ID;
+        }
+        function Delele(ID) {
+            $.ajax({
+                url: "/Admin/Product/Delete/" + ID,
+                type: "POST",
+                contentType: "application/json;charset=UTF-8",
+                dataType: "json",
+                success: function (result) {
+                    if (result) {
+                        Search(pageCurrent);
+                        toastr.success("Xóa thành công!");
+                    }
+                    else {
+                        toastr.error("Xóa không thành công!");
+                    }
+                },
+                error: function (errormessage) {
+                    toastr.error(errormessage.responseText);
+                }
+            });
+        }
+        function ClearTextBox() {
+            $('#Name').val('');
+            $('#UrlSlug').val('');
+            $('#Price').val('');
+            $('#Model').val('');
+            $('#Amount').val('');
+            $('#Guarantee').val('');
+            $('#Origin').val('');
+            $('#Discount').val('');
+            $('#ShortDescription').val('');
+            $('#Detail').val('');
+            $('#Edit').hide();
+            $('#Add').show();
+            $('#Status').show();
+            ClearValidation();
+            LoadSupCate();
+        }
+        function ClearValidation() {
+            $('#Name').removeClass('is-invalid');
+            $('#Name').removeClass('is-valid');
+            $('#UrlSlug').removeClass('is-invalid');
+            $('#UrlSlug').removeClass('is-valid');
+            $('#Price').removeClass('is-invalid');
+            $('#Price').removeClass('is-valid');
+            $('#Model').removeClass('is-invalid');
+            $('#Model').removeClass('is-valid');
+            $('#Amount').removeClass('is-invalid');
+            $('#Amount').removeClass('is-valid');
+            $('#Guarantee').removeClass('is-invalid');
+            $('#Guarantee').removeClass('is-valid');
+            $('#Origin').removeClass('is-invalid');
+            $('#Origin').removeClass('is-valid');
+            $('#Discount').removeClass('is-invalid');
+            $('#Discount').removeClass('is-valid');
+            $('#ShortDescription').removeClass('is-invalid');
+            $('#ShortDescription').removeClass('is-valid');
+            $('#Detail').removeClass('is-invalid');
+            $('#Detail').removeClass('is-valid');
+            $('#Image').removeClass('is-invalid');
+            $('#Image').removeClass('is-valid');
+            $("#imgPreview").attr("src", '/wwwroot/ImageProducts/no-image-icon-0.jpg');
+            $('#error_name').hide();
+            $('#error_price').hide();
+            $('#error_model').hide();
+            $('#error_amount').hide();
+            $('#error_guarentee').hide();
+            $('#error_discount').hide();
+        }
+
+        $('#Image').change(function () {
+            const [file] = $('#Image').get(0).files;
+            if (file) {
+                imgPreview.src = URL.createObjectURL(file);
+            } else {
+                imgPreview.src = '/wwwroot/ImageProducts/no-image-icon-0.jpg';
+            }
+            errorImage();
+        });
+
+        //Validations
+        let checkError = false;
+        let numberRegex = /^[0-9]+$/;
+        const errorName = () => {
+            if ($('#Name').val() == '') {
+                $('#error_name').show();
+                $('#error_name').addClass('invalid-feedback');
+                $('#error_name').removeClass('valid-feedback');
+                $('#Name').addClass('is-invalid');
+                $('#error_name').text("Tên không được để trống!");
+                checkError = true;
+            } else {
+                $('#error_name').hide();
+                $('#Name').addClass('is-valid');
+                $('#Name').removeClass('is-invalid');
+                checkError = false;
+            }
+        }
+        $('#Name').keyup(() => {
+            errorName();
+            changeUrl('Name', 'UrlSlug');
+        });
+        $('#Name').keydown(() => {
+            errorName();
+            changeUrl('Name', 'UrlSlug');
+        });
+
+        const errorPrice = () => {
+            if ($('#Price').val() == '') {
+                $('#error_price').show();
+                $('#error_price').addClass('invalid-feedback');
+                $('#error_price').removeClass('valid-feedback');
+                $('#Price').addClass('is-invalid');
+                $('#error_price').text("Giá không được để trống!");
+                checkError = true;
+            }
+            else if (numberRegex.test($('#Price').val()) == false) {
+                $('#error_price').show();
+                $('#error_price').addClass('invalid-feedback');
+                $('#error_price').removeClass('valid-feedback');
+                $('#Price').addClass('is-invalid');
+                $('#error_price').text("Không đúng định dạng!");
+                checkError = true;
+            }
+            else if ($('#Price').val() <= 0) {
+                $('#error_price').show();
+                $('#error_price').addClass('invalid-feedback');
+                $('#error_price').removeClass('valid-feedback');
+                $('#Price').addClass('is-invalid');
+                $('#error_price').text("Giá phải lớn hơn 0!");
+                checkError = true;
+            } else {
+                $('#error_price').hide();
+                $('#Price').addClass('is-valid');
+                $('#Price').removeClass('is-invalid');
+                checkError = false;
+            }
+        }
+        $('#Price').keyup(() => {
+            errorPrice();
+        });
+        $('#Price').keydown(() => {
+            errorPrice();
+        });
+
+        const errorModel = () => {
+            if ($('#Model').val() == '') {
+                $('#error_model').show();
+                $('#error_model').addClass('invalid-feedback');
+                $('#error_model').removeClass('valid-feedback');
+                $('#Model').addClass('is-invalid');
+                $('#error_model').text("Model không được để trống!");
+                checkError = true;
+            }
+            else {
+                $('#error_model').hide();
+                $('#Model').addClass('is-valid');
+                $('#Model').removeClass('is-invalid');
+                checkError = false;
+            }
+        }
+        $('#Model').keyup(() => {
+            errorModel();
+        });
+        $('#Model').keydown(() => {
+            errorModel();
+        });
+
+        const errorAmount = () => {
+            if ($('#Amount').val() == '') {
+                $('#error_amount').show();
+                $('#error_amount').addClass('invalid-feedback');
+                $('#error_amount').removeClass('valid-feedback');
+                $('#Amount').addClass('is-invalid');
+                $('#error_amount').text("Số lượng không được để trống!");
+                checkError = true;
+            }
+            else if (numberRegex.test($('#Amount').val()) == false) {
+                $('#error_amount').show();
+                $('#error_amount').addClass('invalid-feedback');
+                $('#error_amount').removeClass('valid-feedback');
+                $('#Amount').addClass('is-invalid');
+                $('#error_amount').text("Không đúng định dạng!");
+                checkError = true;
+            }
+            else if ($('#Amount').val() <= 0) {
+                $('#error_amount').show();
+                $('#error_amount').addClass('invalid-feedback');
+                $('#error_amount').removeClass('valid-feedback');
+                $('#Amount').addClass('is-invalid');
+                $('#error_amount').text("Số lượng phải lớn hơn 0!");
+                checkError = true;
+            } else {
+                $('#error_amount').hide();
+                $('#Amount').addClass('is-valid');
+                $('#Amount').removeClass('is-invalid');
+                checkError = false;
+            }
+        }
+        $('#Amount').keyup(() => {
+            errorAmount();
+        });
+        $('#Amount').keydown(() => {
+            errorAmount();
+        });
+
+        const errorGuarantee = () => {
+            if ($('#Guarantee').val() == '') {
+                $('#error_guarantee').show();
+                $('#error_guarantee').addClass('invalid-feedback');
+                $('#error_guarantee').removeClass('valid-feedback');
+                $('#Guarantee').addClass('is-invalid');
+                $('#error_guarantee').text("Bảo hành không được để trống!");
+                checkError = true;
+            }
+            else if (numberRegex.test($('#Guarantee').val()) == false) {
+                $('#error_guarantee').show();
+                $('#error_guarantee').addClass('invalid-feedback');
+                $('#error_guarantee').removeClass('valid-feedback');
+                $('#Guarantee').addClass('is-invalid');
+                $('#error_guarantee').text("Không đúng định dạng!");
+                checkError = true;
+            }
+            else if ($('#Guarantee').val() < 0) {
+                $('#error_guarantee').show();
+                $('#error_guarantee').addClass('invalid-feedback');
+                $('#error_guarantee').removeClass('valid-feedback');
+                $('#Guarantee').addClass('is-invalid');
+                $('#error_guarantee').text("Bảo hành phải không âm!");
+                checkError = true;
+            } else {
+                $('#error_guarantee').hide();
+                $('#Guarantee').addClass('is-valid');
+                $('#Guarantee').removeClass('is-invalid');
+                checkError = false;
+            }
+        }
+        $('#Guarantee').keyup(() => {
+            errorGuarantee();
+        });
+        $('#Guarantee').keydown(() => {
+            errorGuarantee();
+        });
+
+        const errorDiscount = () => {
+            if (numberRegex.test($('#Discount').val()) == false) {
+                $('#error_discount').show();
+                $('#error_discount').addClass('invalid-feedback');
+                $('#error_discount').removeClass('valid-feedback');
+                $('#Discount').addClass('is-invalid');
+                $('#error_discount').text("Không đúng định dạng!");
+                checkError = true;
+            }
+            else if ($('#Discount').val() == '' || $('#Discount').val() < 0 || $('#Discount').val() > 100) {
+                $('#error_discount').show();
+                $('#error_discount').addClass('invalid-feedback');
+                $('#error_discount').removeClass('valid-feedback');
+                $('#Discount').addClass('is-invalid');
+                $('#error_discount').text("Giảm giá từ 0%-100%!");
+                checkError = true;
+            } else {
+                if ($('#Discount').val() != '') {
+                    $('#error_discount').hide();
+                    $('#Discount').addClass('is-valid');
+                    $('#Discount').removeClass('is-invalid');
+                    checkError = false;
+                }
+            }
+        }
+        $('#Discount').keyup(() => {
+            errorDiscount();
+        });
+        $('#Discount').keydown(() => {
+            errorDiscount();
+        });
+
+        const errorImage = () => {
+            if ($('#Image').get(0).files.length == 0) {
+                $('#error_image').show();
+                $('#error_image').addClass('invalid-feedback');
+                $('#error_image').removeClass('valid-feedback');
+                $('#Image').addClass('is-invalid');
+                $('#error_image').text("Biểu tượng không được để trống");
+                checkError = true;
+            } else {
+                $('#error_image').hide();
+                $('#Image').addClass('is-valid');
+                $('#Image').removeClass('is-invalid');
+                checkError = false;
+            }
+        }
+
+        const Search = (page) => {
+            var txtSearch = $("#txtSearch").val();
+            if (txtSearch != "") {
+                LoadData(txtSearch, page)
+            }
+            else {
+                LoadData(null, page);
+            }
+        }
+        $('#txtSearch').keyup(() => {
+            Search(1);
+        });
+        $('#txtSearch').keydown(() => {
+            Search(1);
+        });
+    </script>
+}

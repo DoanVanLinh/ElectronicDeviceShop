@@ -1,0 +1,69 @@
+﻿<!-- modal edit -->
+<div class="modal" id="modal-edit" tabindex="-1" role="dialog" aria-labelledby="mediumModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered " role="document">
+        <div class="modal-content ">
+            <div class="modal-header ">
+                <div class="col-10 border-bottom-0 ">
+                    <h3 class="page-title ">Thêm mới Tài khoản</h3>
+                </div>
+                <button type="button" class="close btn-lg" data-bs-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body ">
+                <div class="form-group ">
+                    <label for="UserName" class="fw-bold ">Tên Tài khoản</label>
+                    <input type="text" class="form-control form-control-lg " name="UserName" id="UserName" placeholder="" value="" required="">
+                    <div class="valid-feedback "></div>
+                </div>
+                <div class="form-group ">
+                    <label for="Password" class="fw-bold ">Mật khẩu</label>
+                    <div class="input-group mb-3">
+                        <input type="password" class="form-control form-control-lg " name="Password" id="Password" placeholder="URL Slug " value=" " required="">
+                        <div class="input-group-append">
+                            <button class="btn btn-white" type="button"><i class="fas fa-eye"></i></button>
+                        </div>
+                    </div>
+                    <div class="valid-feedback "></div>
+                </div>
+                <div class="form-group ">
+                    <label for="FullName" class="fw-bold ">Họ và Tên</label>
+                    <input type="text" class="form-control form-control-lg " name="FullName" id="FullName" placeholder="" value="" required="">
+                    <div class="valid-feedback "></div>
+                </div>
+                <div class="form-group ">
+                    <label for="Phone" class="fw-bold ">Số điên thoại</label>
+                    <input type="text" class="form-control form-control-lg" name="Phone" id="Phone" placeholder="" value="" required="">
+                    <div class="valid-feedback "></div>
+                </div>
+                <div class="form-group ">
+                    <label for="Address" class="fw-bold ">Địa chỉ</label>
+                    <input type="text" class="form-control form-control-lg" name="Address" id="Address" placeholder="" value="" required="">
+                    <div class="valid-feedback "></div>
+                </div>
+                <div class="form-group ">
+                    <label for="Email" class="fw-bold ">Email</label>
+                    <input type="email" class="form-control form-control-lg" name="Origin" id="Origin" placeholder="" value="" required="">
+                    <div class="valid-feedback "></div>
+                </div>
+                <div class="form-group ">
+                    <label for="Role" class="fw-bold ">Vai trò</label>
+                    <input type="number" class="form-control form-control-lg" name="Role" id="Role" placeholder="" min="0" max="2" required="">
+                    <div class="valid-feedback "></div>
+                </div>
+                <div class="form-group ">
+                    <label for="Avatar" class="fw-bold ">Ảnh đại diện</label>
+                    <input type="image" class="form-control form-control-lg " name="Avatar" id="Avatar" value="0.jpg">
+                    <div class="valid-feedback "></div>
+                </div>
+                <div class="form-group custom-control custom-checkbox mb-1 ">
+                    <input type="checkbox" class="custom-control-input " id="status " checked="">
+                    <label class="custom-control-label " for="status ">Trạng thái</label>
+                </div>
+            </div>
+            <div class="modal-footer ">
+                <button type="button" class="btn btn-danger btn-lg me-md-2" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-success btn-lg" onclick="toastr.success('Sửa thành công!');" data-bs-dismiss="modal">Sửa</button>
+
+            </div>
+        </div>
+    </div>
+</div>

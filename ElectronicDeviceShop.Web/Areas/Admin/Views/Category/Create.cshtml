@@ -1,0 +1,40 @@
+﻿<!-- modal create -->
+<div class="modal" id="modal-add-edit" tabindex="-1" role="dialog" aria-labelledby="mediumModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered " role="document">
+        <div class="modal-content ">
+            <div class="modal-header ">
+                <div class="col-10 border-bottom-0 ">
+                    <h3 class="page-title ">Thêm mới Danh mục</h3>
+                </div>
+                <button type="button" class="close btn-lg" data-bs-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body ">
+                <div class="form-group ">
+                    <label for="Name " class="fw-bold ">Tên Danh mục</label>
+                    <input type="text" class="form-control form-control-lg" name="Nam " id="Name" placeholder="" value="" required="">
+                    <div class="valid-feedback" id="error_name"></div>
+                </div>
+                <div class="form-group ">
+                    <label for="UrlSlug " class="fw-bold ">Url Slug</label>
+                    <input type="text" class="form-control form-control-lg" name="UrlSlug" id="UrlSlug" placeholder="URL Slug" readonly value="" required="">
+                    <div class="valid-feedback" id="error_url"></div>
+                </div>
+                <div class="form-group">
+                    <label for="Icon" class="fw-bold ">Icon</label>
+                    <input type="file" class="form-control form-control-lg " name="Icon" id="Icon" value="">
+                    <div class="text-center m-3"><img class="img-fluid rounded" id="imgPreview" src="~/wwwroot/ImageProducts/no-image-icon-0.jpg" alt="image" /></div>
+                    <div class="valid-feedback" id="error_icon"></div>
+                </div>
+                <div class="form-group custom-control custom-checkbox mb-1 ">
+                    <input type="checkbox" class="custom-control-input " id="status" checked disabled>
+                    <label class="custom-control-label " for="status ">Trạng thái</label>
+                </div>
+            </div>
+            <div class="modal-footer ">
+                <button type="button" class="btn btn-danger btn-lg me-md-2" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-success btn-lg" onclick="return Add();" id="Add" @*onclick="toastr.success('Thêm thành công!');"*@>Thêm</button>
+                <button type="button" class="btn btn-success btn-lg" onclick="return Edit();" id="Edit">Sửa</button>
+            </div>
+        </div>
+    </div>
+</div>

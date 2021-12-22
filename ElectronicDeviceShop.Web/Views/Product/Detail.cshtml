@@ -1,0 +1,179 @@
+﻿@using ElectronicDeviceShop.ViewModels.Products
+@model ProductDetailViewModel
+@{
+    ViewBag.Title = "Detail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<!--================Home Banner Area =================-->
+<section class="banner_area">
+    <div class="banner_inner d-flex align-items-center">
+        <div class="container">
+            <div class="banner_content d-md-flex justify-content-between align-items-center">
+                <div class="mb-3 mb-md-0">
+                    <h2>Chi tiết sản phẩm</h2>
+                </div>
+                <div class="page_link">
+                    <a href="/Home/Indexs">Home</a>
+                    <a href="single-product.html">Product Details</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!--================End Home Banner Area =================-->
+<!--================Single Product Area =================-->
+<div class="product_image_area">
+    <div class="container">
+        <div class="row s_product_inner">
+            <div class="col-lg-6 py-2 d-flex flex-column justify-content-between">
+                <div class="s_product_img">
+                    <div id="carouselExampleIndicators"
+                         class="carousel slide"
+                         data-ride="carousel">
+                        <ol class="carousel-indicators">
+                        </ol>
+                        <div class="carousel-inner">
+                            <div class="carousel-item active">
+                                <img class="d-block w-100"
+                                     src="/wwwroot/ImageProducts/@Model.Image"
+                                     alt="First slide" />
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <p class="border-0 text-left m-3" style="word-break:break-word">
+                    @Model.ShortDescription
+                </p>
+            </div>
+            <div class="col-lg-5 offset-lg-1">
+                <div class="s_product_text">
+                    <h3>@Model.Name</h3>
+                    <h1 id="Money" style="color:red">
+                        <span class="bg-warning" id="Discount">- %</span>
+                    </h1>
+                    <h2><del id="MoneyDis"></del></h2>
+                    <ul class="list">
+                        <li>
+                            <span>Model:</span><b> @Model.Model</b>
+                        </li>
+                        <li>
+                            <span>Bảo hành:</span><b> @Model.Guarantee tháng </b> - <span> Xuất xứ:</span><b> @Model.Origin</b>
+                        </li>
+                        <div class="card" style="width: 100%;">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item bg-warning"><i class="fas fa-gift"></i><span style="font-weight:bold; font-size:larger;font-style:normal">Khuyến mãi</span></li>
+                                <li class="list-group-item border-0">Trả góp 0%</li>
+                                <li class="list-group-item border-0">Miễn phí vận chuyển</li>
+                            </ul>
+                        </div>
+                        <br />
+                        <li>
+                            @{
+                                if (Model.Amount > 0)
+                                {
+                                    <h3 style="color:green">Còn Hàng</h3>
+                                }
+                                else
+                                {
+                                    <h3 style="color:darkred">Hết Hàng</h3>
+                                }
+                            }
+                        </li>
+                    </ul>
+
+                    <div class="card_area">
+                        <a class="main_btn text-white" onclick="AddCart();">Thêm vào rỏ</a>
+                        <a class="main_btn" onclick="return BuyNow();" href="/Cart/Index">Mua Ngay</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--================End Single Product Area =================-->
+<!--================Product Description Area =================-->
+<section class="product_description_area m-5">
+    <div class="container">
+        <h1 style="border-bottom: 3px green solid; color:red; font-size:25px">Giới thiệu : <span style="color:dodgerblue"> @Model.Name</span></h1>
+        <div class="tab-content p-2 border-0" id="myTabContent">
+            <div class=""
+                 id="home"
+                 role="tabpanel"
+                 aria-labelledby="home-tab">
+                @Html.Raw(Model.Detail)
+            </div>
+        </div>
+    </div>
+</section>
+<!--================End Product Description Area =================-->
+@section Script{
+    <script>
+        let formatter = new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'VND' });
+        function ToMoney(number) {
+            return formatter.format(number);
+        }
+        $(document).ready(function () {
+            if (@Model.Discount!= 0) {
+                $('#Money').html(ToMoney(@Model.Price * (100 -@Model.Discount) / 100) + '<span class="ml-3 fs-6 bg-warning align-middle" id="Discount">-' +@Model.Discount+'%</span>');
+                $('#MoneyDis').text(ToMoney(@Model.Price));
+            }
+            else {
+                $('#Money').html(ToMoney(@Model.Price * (100 -@Model.Discount) / 100));
+
+            }
+        });
+        function Check() {
+            if (@Model.Amount== 0) {
+                toastr.error('Đã hết hàng!');
+                return false;
+            }
+            if (@Session["RoleAcc"] != 2) {
+
+                toastr.error('Bạn cần đăng nhập!');
+                return false;
+            }
+            return true;
+        }
+        function AddCart() {
+            if (Check() == false)
+                return false;
+            else {
+                let cart = {};
+                cart["ID_Product"] = @Model.ID_Product;
+                cart["Amount"] = 1;
+                cart["ID_Account"] = @Session["ID_Account"];
+
+                $.ajax({
+                    url: "/Cart/Create",
+                    data: JSON.stringify(cart),
+                    type: "POST",
+                    processData: false,
+                    contentType: "application/json;charset=utf-8",
+                    dataType: "json",
+                    success: function (result) {
+                        if (result) {
+                            toastr.success('Thêm giỏ hàng thành công!');
+                        }
+                        else {
+                            toastr.error('Thêm không thành thành công!');
+                            return false;
+                        }
+                    },
+                    error: function (errormessage) {
+                        alert(errormessage.responseText);
+                        toastr.error('Thêm không thành thành công!');
+                    }
+                });
+            }
+        }
+        function BuyNow() {
+            if (Check() == false)
+                return false;
+            else {
+                AddCart();
+                return true;
+            }
+        }
+    </script>
+}

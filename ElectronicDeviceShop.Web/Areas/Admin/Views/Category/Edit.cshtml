@@ -1,0 +1,38 @@
+﻿<!-- modal edit -->
+<div class="modal" id="modal-edit" tabindex="-1" role="dialog" aria-labelledby="mediumModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered " role="document">
+        <div class="modal-content ">
+            <div class="modal-header ">
+                <div class="col-10 page-header border-bottom-0 ">
+                    <h3 class="page-title ">Chỉnh sửa Danh mục</h3>
+                </div>
+                <button type="button" class="close btn-lg" data-bs-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body ">
+                <div class="form-group ">
+                    <label for="Name " class="fw-bold ">Tên Danh mục</label>
+                    <input type="text" class="form-control form-control-lg " name="Name " id="Name " placeholder="" value="Tên danh mục" required="">
+                    <div class="valid-feedback "></div>
+                </div>
+                <div class="form-group ">
+                    <label for="UrlSlug " class="fw-bold ">Url Slug</label>
+                    <input type="text" class="form-control form-control-lg " name="UrlSlug " id="UrlSlug " placeholder="URL Slug " readonly value="ten-danh-muc" required="">
+                    <div class="valid-feedback "></div>
+                </div>
+                <div class="form-group ">
+                    <label for="Icon " class="fw-bold ">Icon</label>
+                    <input type="image" class="form-control form-control-lg " name="Icon " id="Icon " value="0.jpg ">
+                    <div class="valid-feedback "></div>
+                </div>
+                <div class="form-group custom-control custom-checkbox mb-1 ">
+                    <input type="checkbox" class="custom-control-input " id="status " checked="">
+                    <label class="custom-control-label " for="status ">Trạng thái</label>
+                </div>
+            </div>
+            <div class="modal-footer ">
+                <button type="button" class="btn btn-danger btn-lg me-md-2" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-success btn-lg" onclick="toastr.success('Sửa thành công!');" data-bs-dismiss="modal">Sửa</button>
+            </div>
+        </div>
+    </div>
+</div>

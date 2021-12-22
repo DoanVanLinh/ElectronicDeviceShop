@@ -1,0 +1,332 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+<div class="main-content-container container-fluid px-4">
+    <!-- Page Header -->
+    <div class="page-header row no-gutters py-4">
+        <div class="col-12 col-sm-4 text-center text-sm-left mb-0">
+            <h3 class="page-title">Thống Kê Cửa Hàng</h3>
+        </div>
+    </div>
+    <!-- End Page Header -->
+    <!-- Small Stats Blocks -->
+    <div class="row" id="">
+        <div class="col-12 mb-4">
+            <div class="stats-small stats-small--1 card card-small">
+                <div class="card-body p-0 d-flex">
+                    <div class="d-flex flex-column m-auto">
+                        <div class="stats-small__data text-center">
+                            <span class="stats-small__label text-uppercase">Tổng Doanh Thu</span>
+                            <h1 class="stats-small__value count my-3" id="AllShare" style="font-size: xxx-large;"></h1>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row" id="AllProductByCategory">
+        @*DATA PRODUCT*@
+    </div>
+    <!-- End Small Stats Blocks -->
+    <div class="row">
+        <!-- Users Stats -->
+        <div class="col-lg-8 col-md-12 col-sm-12 mb-4">
+            <div class="card card-small">
+                <div class="card-header border-bottom">
+                    <h6 class="m-0">Doanh Thu Trong Năm</h6>
+                </div>
+                <div class="card-body pt-0">
+                    <div class="chartjs-size-monitor" style="position: absolute; inset: 0px; overflow: hidden; pointer-events: none; visibility: hidden; z-index: -1;"><div class="chartjs-size-monitor-expand" style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1;"><div style="position:absolute;width:1000000px;height:1000000px;left:0;top:0"></div></div><div class="chartjs-size-monitor-shrink" style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1;"><div style="position:absolute;width:200%;height:200%;left:0; top:0"></div></div></div>
+                    <div class="row border-bottom py-2 bg-light d-flex justify-content-end">
+                        <div class="col-12 col-sm-6 d-flex mb-2 mb-sm-0">
+                            <button type="button" class="btn btn-sm btn-white ml-auto mr-auto ml-sm-auto mr-sm-0 mt-3 mt-sm-0" data-bs-toggle="modal" data-bs-target="#modal-detail" onclick="LoadDetailCategoryShare(null,1);">Chi tiết →</button>
+                        </div>
+                    </div>
+                    <canvas id="lineChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <!-- End Users Stats -->
+        <!-- Users By Device Stats -->
+        <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+            <div class="card card-small h-100">
+                <div class="card-header border-bottom">
+                    <h6 class="m-0">Thống Kê Theo Danh Mục</h6>
+                </div>
+                <div class="card-body d-flex justify-content-center align-items-center">
+                    <canvas id="pieChart" style="max-width: 5000px;"></canvas>
+                </div>
+                <div class="card-footer border-top">
+                    <div class="row d-flex justify-content-end">
+                        <div class="col text-right view-report">
+                            <button type="button" class="btn btn-sm btn-white ml-auto mr-auto ml-sm-auto mr-sm-0 mt-3 mt-sm-0" data-bs-toggle="modal" data-bs-target="#modal-detail" onclick="LoadDetailCategoryShare(null,1);">Chi tiết →</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section modal{
+    <div class="modal" id="modal-detail" tabindex="-1 " role="dialog" aria-labelledby="mediumModalLabel " aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+            <div class="modal-content ">
+                <div class="modal-header p-3">
+                    <div class="col-10 border-bottom-0 ">
+                        <h3 class="page-title">
+                            Chi tiết thống kê
+                        </h3>
+                    </div>
+                    <button type="button" class="close btn-lg" data-bs-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                </div>
+                @*<div class=" p-3 d-flex flex-column">*@
+                <div class="row m-1 p-1">
+                    <div class="card-header row no-gutters py-4 d-flex justify-content-center fw-bold col-12">
+                        <div class="input-group mb-3 col-12">
+                            <div class="input-group input-group-seamless">
+                                <span class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-search"></i>
+                                    </span>
+                                </span>
+                                <input type="text" class="form-control" id="txtSearch" placeholder="Tìm kiếm" aria-label="Recipient's username" aria-describedby="basic-addon2">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body p-0 text-center align-middle table-responsive-lg">
+                        <table class="table mb-0 ">
+                            <thead class="bg-light ">
+                                <tr>
+                                    <th class="border-0">#</th>
+                                    <th class="border-0">Tên sản phẩm</th>
+                                    <th class="border-0">Tên danh mục</th>
+                                    <th class="border-0">Số lượng</th>
+                                    <th class="border-0">Giá</th>
+                                    <th class="border-0">Tổng</th>
+                                </tr>
+                            </thead>
+                            <tbody class="tbody-light">
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="card-footer col no-gutters py-4 d-flex flex-column text-center fw-bold col-12 border-top">
+                        <div class="dataTables_info" id="dt-material-checkbox_info" role="status" aria-live="polite">Showing 1 to 10 of 57 entries</div>
+                        <div class="dataTables_paginate paging_simple_numbers d-flex justify-content-center" id="dt-material-checkbox_paginate">
+                            <ul class="pagination">
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class=" btn btn-danger btn-lg me-md-2" data-bs-dismiss="modal">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section Chart{
+    <script>
+        let allCategory = [];
+        let allSellProductByCategory = [];
+        let detailCategoryShare = [];
+        let amount = new Intl.NumberFormat({ style: 'currency', currency: 'VND' });
+        let formatter = new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'VND' });
+        $(document).ready(function () {
+            $("body").on("click", ".pagination li a", function (event) {
+                event.preventDefault();
+                var page = $(this).attr('data-page');
+                Search(page);
+            });
+            GetAllCategory();
+            GetAllProDuctByCategory();
+            GetAllShareOfYear();
+            $(".nav-link").removeClass("active");
+            $("#Statistic").addClass("active");
+        });
+        function GetAllCategory() {
+            $.ajax({
+                url: "/Statistic/GetAllCategory",
+                type: "GET",
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (result) {
+                    $.each(result.cateAmount, function (key, item) {
+                        allCategory.push(key);
+                        allSellProductByCategory.push(item);
+                        $("#AllShare").text(amount.format(result.allShare) + " đ");
+                    });
+                    $.each(result.detailShare, function (key, item) {
+                        detailCategoryShare.push(item);
+                    });
+                },
+                error: function (errormessage) {
+                    toastr.error(errormessage.responseText);
+                }
+            });
+        }
+        var ctxP = document.getElementById("pieChart").getContext('2d');
+        var myPieChart = new Chart(ctxP, {
+            type: 'pie',
+            data: {
+                labels: allCategory,
+                datasets: [{
+                    data: allSellProductByCategory,
+                    backgroundColor: ["#F7464A", "#46BFBD", "#FDB45C", "#949FB1", "#4D5360"],
+                    hoverBackgroundColor: ["#FF5A5E", "#5AD3D1", "#FFC870", "#A8B3C5", "#616774"]
+                }]
+            },
+            options: {
+                responsive: true
+            }
+        });
+        function GetAllProDuctByCategory() {
+            $.ajax({
+                url: "/Statistic/GetAllProDuctByCategory",
+                type: "GET",
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (result) {
+                    var html = '';
+                    $.each(result, function (key, item) {
+
+                        html += ' <div class="col-lg col-md-6 col-sm-6 mb-4">';
+                        html += ' <div class="stats-small stats-small--1 card card-small">';
+                        html += ' <div class="card-body p-0 d-flex">';
+                        html += ' <div class="d-flex flex-column m-auto">';
+                        html += ' <div class="stats-small__data text-center">';
+                        html += ' <span class="stats-small__label text-uppercase">' + item.category + '</span>';
+                        html += ' <h6 class="stats-small__value count my-3">' + amount.format(item.amount) + '</h6>';
+                        html += ' </div>';
+                        html += ' </div>';
+                        html += ' </div>';
+                        html += ' </div>';
+                        html += ' </div>';
+
+                    });
+                    $("#AllProductByCategory").html(html);
+                },
+                error: function (errormessage) {
+                    toastr.error(errormessage.responseText);
+                }
+            });
+        }
+        function LoadDetailCategoryShare(txtSearch, page) {
+            $.ajax({
+                url: "/Admin/Statistic/LoadDetailCategoryShare",
+                type: "GET",
+                data: { txtSearch: txtSearch, page: page },
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (result) {
+                    var count = 0;
+                    var html = '';
+                    $.each(result.data, function (key, item) {
+                        imgPath = '/wwwroot/ImageProducts/' + item.Image;
+                        count++;
+                        html += '<tr>';
+                        html += '<td class="align-middle">' + ((result.pageCurrent - 1) * result.pageSize + count) + '</td>';
+                        html += '<td class="align-middle">' + item.Name + '</td>';
+                        html += '<td class="align-middle">' + item.NameCategory + '</td>';
+                        html += '<td class="align-middle">' + item.Amount + '</td>';
+                        html += '<td class="align-middle">' + formatter.format(item.Price) + '</td>';
+                        html += '<td class="align-middle">' + formatter.format(item.Total) + '</td>';
+                        html += '</tr>';
+                    });
+                    $('.tbody-light').html(html);
+
+                    //create pagination
+                    var pagination_string = "";
+                    pageCurrent = result.pageCurrent;
+                    var numSize = result.numSize;
+                    lastPage = numSize;
+
+                    $('#dt-material-checkbox_info').text(result.data.length + '/' + result.all.length);
+
+                    //create button previous
+                    if (pageCurrent > 1) {
+                        var pagePrevious = pageCurrent - 1;
+                        pagination_string += '<li class="page-item"><a href="" class="page-link" data-page=' + pagePrevious + '>Previous</a></li>';
+                    }
+
+                    for (i = 1; i <= numSize; i++) {
+                        if (i == pageCurrent) {
+                            pagination_string += '<li class="page-item active"><a href="" class="page-link" data-page=' + i + '>' + pageCurrent + '</a></li>';
+                        } else {
+                            pagination_string += '<li class="page-item"><a href="" class="page-link" data-page=' + i + '>' + i + '</a></li>';
+                        }
+                    }
+
+                    //create button next
+                    if (pageCurrent > 0 && pageCurrent < numSize) {
+                        var pageNext = pageCurrent + 1;
+                        pagination_string += '<li class="page-item"><a href="" class="page-link"  data-page=' + pageNext + '>Next</a></li>';
+                    }
+                    $(".pagination").html(pagination_string);
+                },
+                error: function (errormessage) {
+                    toastr.error(errormessage.responseText);
+                }
+            });
+        }
+        var allMonth = [];
+        var sharePerMonth = [];
+        function GetAllShareOfYear() {
+            $.ajax({
+                url: "/Statistic/GetAllShareOfYear",
+                type: "GET",
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (result) {
+                    $.each(result, function (key, item) {
+                        allMonth.push(key);
+                        sharePerMonth.push(item);
+                    });
+                },
+                error: function (errormessage) {
+                    toastr.error(errormessage.responseText);
+                }
+            });
+        }
+        //line
+        var ctxL = document.getElementById("lineChart").getContext('2d');
+        var myLineChart = new Chart(ctxL, {
+            type: 'line',
+            data: {
+                labels: allMonth,
+                datasets: [{
+                    label: "Doanh thu theo tháng",
+                    data: sharePerMonth,
+                    backgroundColor: [
+                        'rgba(0, 255, 0, .2)',
+                    ],
+                    borderColor: [
+                        'rgba(0, 255, 0, .7)',
+                    ],
+                    borderWidth: 2
+                }
+                ]
+            },
+            options: {
+                responsive: true
+            }
+        });
+
+        const Search = (page) => {
+            var txtSearch = $("#txtSearch").val();
+            if (txtSearch != "") {
+                LoadDetailCategoryShare(txtSearch, page);
+            }
+            else {
+                LoadDetailCategoryShare(null, page);
+            }
+        }
+        $('#txtSearch').keyup(() => {
+            Search(1);
+        });
+        $('#txtSearch').keydown(() => {
+            Search(1);
+        });
+    </script>
+}

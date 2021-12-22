@@ -1,0 +1,768 @@
+﻿@using ElectronicDeviceShop.ViewModels.Bills
+@model IEnumerable<BillViewModel>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+<div class="main-content-container container-fluid px-4">
+    <!-- Default Light Table -->
+    <div class="row">
+        <div class="col">
+            <div class="card card-small mb-4 mt-5">
+                <div class="card-body p-0 text-center align-middle table-responsive-sm ">
+                    <!-- partial:index.partial.html -->
+                    <div class="tabs-to-dropdown">
+                        <div class="nav-wrapper d-flex justify-content-center">
+                            <ul class="nav nav-pills d-none d-md-flex" id="pills-tab" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <a class="nav-link active show" id="pills-new-orders-tab" data-toggle="pill" href="#pills-new-orders" onclick="tab = 1; LoadData(null, 1);" role="tab" aria-controls="pills-new-orders" aria-selected="true">Đơn hàng mới</a>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <a class="nav-link" id="pills-confirm-orders-tab" data-toggle="pill" href="#pills-confirm-orders" onclick="tab = 2; LoadData(null,1);" role="tab" aria-controls="pills-confirm-orders" aria-selected="false">Đơn hàng đã tiếp nhận</a>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <a class="nav-link" id="pills-shipping-orders-tab" data-toggle="pill" href="#pills-shipping-orders" onclick="tab = 3; LoadData(null,1);" role="tab" aria-controls="pills-shipping-orders" aria-selected="false">Đơn hàng đang vận chuyển</a>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <a class="nav-link" id="pills-success-orders-tab" data-toggle="pill" href="#pills-success-orders" onclick="tab = 4; LoadData(null,1);" role="tab" aria-controls="pills-success-orders" aria-selected="false">Đơn hàng đã giao thành công</a>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <a class="nav-link" id="pills-cancel-orders-tab" data-toggle="pill" href="#pills-cancel-orders" onclick="tab = 5; LoadData(null,1);" role="tab" aria-controls="pills-cancel-orders" aria-selected="false">Đơn hàng đã hủy</a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="tab-content" id="pills-tabContent">
+                            <div class="tab-pane fade show active" id="pills-new-orders" role="tabpanel" aria-labelledby="pills-new-orders-tab">
+                                <div class="container-fluid">
+                                    <h2 class="col-12" id="title-tab">Đơn hàng mới</h2>
+                                    <div class="input-group mb-3 col-12">
+                                        <div class="input-group input-group-seamless">
+                                            <span class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <i class="fas fa-search"></i>
+                                                </span>
+                                            </span>
+                                            <input type="text" class="form-control" id="txtSearch" placeholder="Tìm kiếm" aria-label="Recipient's username" aria-describedby="basic-addon2">
+                                        </div>
+                                    </div>
+                                    <!-- Default Light Table -->
+                                    <div class="row">
+                                        <div class="col">
+                                            <div>
+                                                <div class="card-body p-0 text-center align-middle table-responsive-lg">
+                                                    <table class="table mb-0 ">
+                                                        <thead class="bg-light ">
+                                                            <tr>
+                                                                <th class="border-0">#</th>
+                                                                <th class="border-0">@Html.DisplayNameFor(model => model.ReceiverName)</th>
+                                                                <th class="border-0">@Html.DisplayNameFor(model => model.ReceiverAddress)</th>
+                                                                <th class="border-0">@Html.DisplayNameFor(model => model.PayType)</th>
+                                                                <th class="border-0">@Html.DisplayNameFor(model => model.BuyDate)</th>
+                                                                <th class="border-0">Chức năng</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody class="tbody-light">
+                                                            @*DATA*@
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                                <div class="card-footer col no-gutters py-4 d-flex flex-column text-center fw-bold col-12 border-top">
+                                                    <div class="dataTables_info" id="dt-material-checkbox_info" role="status" aria-live="polite">Showing 1 to 10 of 57 entries</div>
+                                                    <div class="dataTables_paginate paging_simple_numbers d-flex justify-content-center" id="dt-material-checkbox_paginate">
+                                                        <ul class="pagination">
+                                                            @*PAGINATION*@
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- End Default Light Table -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End Default Light Table -->
+</div>
+<!-- Modal -->
+<!-- modal detail -->
+<div class="modal" id="modal-detail" tabindex="-1 " role="dialog" aria-labelledby="mediumModalLabel " aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+        <div class="modal-content ">
+            <div class="modal-header p-3">
+                <div class="col-10 border-bottom-0 ">
+                    <h3 class="page-title">
+                        Chi tiết Đơn hàng
+                        <small class="page-info">
+                            <i class="fa fa-angle-double-right text-80"></i>
+                            ID: #<span id="id-detail"></span>
+                        </small>
+                        <img class="" alt="" style="height: 50px;">
+                    </h3>
+                </div>
+                <button type="button" class="close btn-lg" data-bs-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body p-3 d-flex flex-column">
+                <div class="card-body p-0">
+                    <div class="page-content container col-12 m-1 d-flex justify-content-center">
+                        <div class="container px-0">
+                            <div class="row">
+                                <div class="col-12 col-lg-10 offset-lg-1">
+                                    <div class="row col-12 m-0">
+                                        <div class="col-4">
+                                            <div>
+                                                <span class="text-sm text-grey-m2 align-middle">Người nhận:</span>
+                                                <span class="text-600 text-110 text-blue align-middle" id="name-detail">Alex Doe</span>
+                                            </div>
+                                            <div class="text-grey-m2">
+                                                <div class="my-1" style="word-break:break-word" id="address-detail">
+                                                    Street, City
+                                                </div>
+                                                <div class="my-1"><i class="fa fa-phone fa-flip-horizontal text-secondary"></i> <b class="text-600" id="phone-detail">111-111-111</b></div>
+                                            </div>
+                                        </div>
+                                        <!-- /.col -->
+
+                                        <div class="col-4">
+                                            <div class="text-grey-m2">
+                                                <div class="mt-1 mb-2 text-secondary-m1 text-600 text-125">
+                                                    Chi tiết
+                                                </div>
+                                                <div class="my-2"><i class="fa fa-circle text-blue-m2 text-xs mr-1"></i> <span class="text-600 text-90">Thanh toán:</span> <span id="payType-detail">Unpaid</span></div>
+                                                <div class="my-2"><i class="fa fa-circle text-blue-m2 text-xs mr-1"></i> <span class="text-600 text-90">Trạng thái:</span> <span class="badge badge-warning badge-pill px-25" id="status-detail">Unpaid</span></div>
+                                            </div>
+                                        </div>
+                                        <!-- /.col -->
+                                        <div class="col-4">
+                                            <div class="text-grey-m2">
+                                                <div class="mt-1 mb-2 text-secondary-m1 text-600 text-125">
+                                                    Ghi chú
+                                                </div>
+                                                <div class="my-2"><i class="fa fa-circle text-blue-m2 text-xs mr-1"></i><span id="note-detail"></span></div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="mt-4">
+                                        <div class="row text-600 text-black bgc-default-tp1 py-25">
+                                            <div class="d-none d-sm-block col-1">#</div>
+                                            <div class="col-9 col-sm-5">Tên sản phẩm</div>
+                                            <div class="d-none d-sm-block col-4 col-sm-2">Số lượng</div>
+                                            <div class="d-none d-sm-block col-sm-2">Đơn giá</div>
+                                            <div class="col-2">Tổng</div>
+                                        </div>
+
+                                        <div class="text-95 text-secondary-d3" id="product-detail">
+                                            @*Product*@
+                                        </div>
+                                        <div class="row border-b-2 brc-default-l2"></div>
+
+                                        <div class="row mt-3">
+                                            <div class="col-12 col-sm-7 text-grey-d2 text-95 mt-2 mt-lg-0">
+
+                                            </div>
+
+                                            <div class="col-12 col-sm-5 text-grey text-90 order-first order-sm-last">
+                                                <div class="row my-2">
+                                                    <div class="col-7 text-right">
+                                                        Thành tiền
+                                                    </div>
+                                                    <div class="col-5">
+                                                        <span class="text-120 text-secondary-d1" id="totalMoney">$2,250</span>
+                                                    </div>
+                                                </div>
+
+                                                @*<div class="row my-2">
+                                                        <div class="col-7 text-right">
+                                                            Giảm giá (<span id="discount-detail"></span>
+                                                        </div>
+                                                        <div class="col-5">
+                                                            <span class="text-110 text-secondary-d1" id="totalMoneyDiscount">$225</span>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="row my-2 align-items-center bgc-primary-l3 p-2">
+                                                        <div class="col-7 text-right">
+                                                            Thành tiền
+                                                        </div>
+                                                        <div class="col-5">
+                                                            <span class="text-150 text-success-d3 opacity-2"  id="totalMoneyDiscount">$2,475</span>
+                                                        </div>
+                                                    </div>*@
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class=" btn btn-danger btn-lg me-md-2" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Script{
+    <script>
+        var lastPage = 1;
+        var pageCurrent = 1;
+        let tab = 1;
+        let money = new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'VND' });
+
+        $(document).ready(function () {
+            CheckPermission();
+            $("body").on("click", ".pagination li a", function (event) {
+                event.preventDefault();
+                var page = $(this).attr('data-page');
+                Search(page);
+            });
+            $('select').change(function (e) {
+                var optionSelected = $("option:selected", this);
+                var valueSelected = this.value;
+
+            });
+            $(".nav-link").removeClass("active");
+            $("#Bill").addClass("active");
+            $("#pills-new-orders-tab").addClass("active");
+
+        });
+
+        let edit;
+        let view;
+        function CheckPermission() {
+            $.ajax({
+                url: "/Admin/Bill/CheckPermission",
+                type: "GET",
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (result) {
+                    edit = result.Edit;
+                    view = result.View;
+                    if (view == true)
+                        LoadNewOrder(null, 1);
+                    else
+                        $(".main-content-container").html('<div class="error"> <div class= "error__content" ><h2>500</h2><h3>Bạn không có quyền truy cập!</h3> <p>Liên hệ với Admin để biết thêm thông tin.</p><button type="button" class="btn btn-accent btn-pill"><a class="text-black" href="/Admin/Statistic/Index">Trang chủ</a></button></div></div>');
+                }
+            });
+        }
+     
+        $(document).on('click', '.edit-button', function () {
+            if (edit == false) {
+                toastr.error("Bạn không có quyền!");
+                this.blur();
+            }
+        });
+        $(document).on('change', '.edit-button', function () {
+            if (edit == false) {
+                toastr.error("Bạn không có quyền!");
+                this.val(0);
+                this.blur();
+            }
+        });
+        
+
+        function convertToJavaScriptDate(value) {
+            var pattern = /Date\(([^)]+)\)/;
+            var results = pattern.exec(value);
+            var dt = new Date(parseFloat(results[1]));
+            return (dt.getMonth() + 1) + "/" + dt.getDate() + "/" + dt.getFullYear();
+        }
+        function LoadData(txtSearch, page) {
+            switch (tab) {
+                case 1:
+                    LoadNewOrder(txtSearch, page);
+                    break;
+                case 2:
+                    LoadConfirmOrder(txtSearch, page);
+                    break;
+                case 3:
+                    LoadShippingOrder(txtSearch, page);
+                    break;
+                case 4:
+                    LoadSuccessOrder(txtSearch, page);
+                    break;
+                case 5:
+                    LoadCancelOrder(txtSearch, page);
+                    break;
+            }
+        }
+        function LoadNewOrder(txtSearch, page) {
+            $.ajax({
+                url: "/Admin/Bill/GetNewOrder",
+                type: "GET",
+                data: { txtSearch: txtSearch, page: page },
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (result) {
+                    ClearZone();
+                    var count = 0;
+                    var html = '';
+                    $.each(result.data, function (key, item) {
+                        count++;
+                        html += '<tr>';
+                        html += '<td class="align-middle">' + ((result.pageCurrent - 1) * result.pageSize + count) + '</td>';
+                        html += '<td class="align-middle">' + item.ReceiverName + '</td>';
+                        html += '<td class="align-middle">' + item.ReceiverAddress + '</td>';
+                        html += '<td class="align-middle">' + item.PayType + '</td>';
+                        html += '<td class="align-middle">' + convertToJavaScriptDate(item.BuyDate) + '</td>';
+                        html += '<td class="align-middle d-flex justify-content-center">';
+                        html += '<div class="form-group col-8 m-1">';
+                        html += '<select class="edit-button inputState form-control text-center" onchange ="Edit(' + item.ID_Bill + ');" id="' + item.ID_Bill + '">';
+                        html += '<option value="0" selected="">Chọn</option>';
+                        html += '<option value="3">Tiếp nhận</option>';
+                        html += '<option value="6">Từ chối</option>';
+                        html += '</select>';
+                        html += '</div>';
+                        html += '<button type="button" class="col-2 btn btn-sm btn-info m-1 d-flex justify-content-center align-items-center"  onclick="Detail(' + item.ID_Bill + ');" data-bs-toggle="modal" data-bs-target="#modal-detail"><i class="fas fa-eye "></i></button>';
+                        html += ' </td >';
+                        html += '</tr>';
+                    });
+                    $('.tbody-light').html(html);
+                    $('#title-tab').text("Đơn hàng mới");
+
+                    //create pagination
+                    var pagination_string = "";
+                    pageCurrent = result.pageCurrent;
+                    var numSize = result.numSize;
+                    lastPage = numSize;
+
+                    $('#dt-material-checkbox_info').text(result.data.length + '/' + result.all.length);
+
+                    //create button previous
+                    if (pageCurrent > 1) {
+                        var pagePrevious = pageCurrent - 1;
+                        pagination_string += '<li class="page-item"><a href="" class="page-link" data-page=' + pagePrevious + '>Previous</a></li>';
+                    }
+
+                    for (i = 1; i <= numSize; i++) {
+                        if (i == pageCurrent) {
+                            pagination_string += '<li class="page-item active"><a href="" class="page-link" data-page=' + i + '>' + pageCurrent + '</a></li>';
+                        } else {
+                            pagination_string += '<li class="page-item"><a href="" class="page-link" data-page=' + i + '>' + i + '</a></li>';
+                        }
+                    }
+
+                    //create button next
+                    if (pageCurrent > 0 && pageCurrent < numSize) {
+                        var pageNext = pageCurrent + 1;
+                        pagination_string += '<li class="page-item"><a href="" class="page-link"  data-page=' + pageNext + '>Next</a></li>';
+                    }
+                    $(".pagination").html(pagination_string);
+                },
+                error: function (errormessage) {
+                    toastr.error(errormessage.responseText);
+                }
+            });
+
+        }
+        function LoadConfirmOrder(txtSearch, page) {
+            $.ajax({
+                url: "/Admin/Bill/GetConfirmOrder",
+                type: "GET",
+                data: { txtSearch: txtSearch, page: page },
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (result) {
+                    ClearZone();
+                    var count = 0;
+                    var html = '';
+                    $.each(result.data, function (key, item) {
+                        count++;
+                        html += '<tr>';
+                        html += '<td class="align-middle">' + ((result.pageCurrent - 1) * result.pageSize + count) + '</td>';
+                        html += '<td class="align-middle">' + item.ReceiverName + '</td>';
+                        html += '<td class="align-middle">' + item.ReceiverAddress + '</td>';
+                        html += '<td class="align-middle">' + item.PayType + '</td>';
+                        html += '<td class="align-middle">' + convertToJavaScriptDate(item.BuyDate) + '</td>';
+                        html += '<td class="align-middle d-flex justify-content-center">';
+                        html += '<div class="form-group col-8 m-1">';
+                        html += '<select class="edit-button inputState form-control text-center" onchange ="Edit(' + item.ID_Bill + ');" id="' + item.ID_Bill + '">';
+                        html += '<option value="0" selected="">Chọn</option>';
+                        html += '<option value="4">Vận chuyển</option>';
+                        html += '<option value="6">Hủy</option>';
+                        html += '</select>';
+                        html += '</div>';
+                        html += '<button type="button" class="col-2 btn btn-sm btn-info m-1 d-flex justify-content-center align-items-center"  onclick="Detail(' + item.ID_Bill + ');" data-bs-toggle="modal" data-bs-target="#modal-detail"><i class="fas fa-eye "></i></button>';
+                        html += ' </td >';
+                        html += '</tr>';
+                    });
+                    $('.tbody-light').html(html);
+                    $('#title-tab').text("Đơn hàng đã tiếp nhận");
+
+                    //create pagination
+                    var pagination_string = "";
+                    pageCurrent = result.pageCurrent;
+                    var numSize = result.numSize;
+                    lastPage = numSize;
+
+                    $('#dt-material-checkbox_info').text(result.data.length + '/' + result.all.length);
+
+                    //create button previous
+                    if (pageCurrent > 1) {
+                        var pagePrevious = pageCurrent - 1;
+                        pagination_string += '<li class="page-item"><a href="" class="page-link" data-page=' + pagePrevious + '>Previous</a></li>';
+                    }
+
+                    for (i = 1; i <= numSize; i++) {
+                        if (i == pageCurrent) {
+                            pagination_string += '<li class="page-item active"><a href="" class="page-link" data-page=' + i + '>' + pageCurrent + '</a></li>';
+                        } else {
+                            pagination_string += '<li class="page-item"><a href="" class="page-link" data-page=' + i + '>' + i + '</a></li>';
+                        }
+                    }
+
+                    //create button next
+                    if (pageCurrent > 0 && pageCurrent < numSize) {
+                        var pageNext = pageCurrent + 1;
+                        pagination_string += '<li class="page-item"><a href="" class="page-link"  data-page=' + pageNext + '>Next</a></li>';
+                    }
+                    $(".pagination").html(pagination_string);
+                },
+                error: function (errormessage) {
+                    toastr.error(errormessage.responseText);
+                }
+            });
+
+        }
+        function LoadShippingOrder(txtSearch, page) {
+            $.ajax({
+                url: "/Admin/Bill/GetShippingOrder",
+                type: "GET",
+                data: { txtSearch: txtSearch, page: page },
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (result) {
+                    ClearZone();
+                    var count = 0;
+                    var html = '';
+                    $.each(result.data, function (key, item) {
+                        count++;
+                        html += '<tr>';
+                        html += '<td class="align-middle">' + ((result.pageCurrent - 1) * result.pageSize + count) + '</td>';
+                        html += '<td class="align-middle">' + item.ReceiverName + '</td>';
+                        html += '<td class="align-middle">' + item.ReceiverAddress + '</td>';
+                        html += '<td class="align-middle">' + item.PayType + '</td>';
+                        html += '<td class="align-middle">' + convertToJavaScriptDate(item.BuyDate) + '</td>';
+                        html += '<td class="align-middle d-flex justify-content-center">';
+                        html += '<div class="form-group col-8 m-1">';
+                        html += '<select class="edit-button inputState form-control text-center" onchange ="Edit(' + item.ID_Bill + ');" id="' + item.ID_Bill + '">';
+                        html += '<option value="0" selected="">Chọn</option>';
+                        html += '<option value="5">Thành công</option>';
+                        html += '<option value="6">Hủy</option>';
+                        html += '</select>';
+                        html += '</div>';
+                        html += '<button type="button" class="col-2 btn btn-sm btn-info m-1 d-flex justify-content-center align-items-center"  onclick="Detail(' + item.ID_Bill + ');" data-bs-toggle="modal" data-bs-target="#modal-detail"><i class="fas fa-eye "></i></button>';
+                        html += ' </td >';
+                        html += '</tr>';
+                    });
+                    $('.tbody-light').html(html);
+                    $('#title-tab').text("Đơn hàng đang vận chuyển");
+
+                    //create pagination
+                    var pagination_string = "";
+                    pageCurrent = result.pageCurrent;
+                    var numSize = result.numSize;
+                    lastPage = numSize;
+
+                    $('#dt-material-checkbox_info').text(result.data.length + '/' + result.all.length);
+
+                    //create button previous
+                    if (pageCurrent > 1) {
+                        var pagePrevious = pageCurrent - 1;
+                        pagination_string += '<li class="page-item"><a href="" class="page-link" data-page=' + pagePrevious + '>Previous</a></li>';
+                    }
+
+                    for (i = 1; i <= numSize; i++) {
+                        if (i == pageCurrent) {
+                            pagination_string += '<li class="page-item active"><a href="" class="page-link" data-page=' + i + '>' + pageCurrent + '</a></li>';
+                        } else {
+                            pagination_string += '<li class="page-item"><a href="" class="page-link" data-page=' + i + '>' + i + '</a></li>';
+                        }
+                    }
+
+                    //create button next
+                    if (pageCurrent > 0 && pageCurrent < numSize) {
+                        var pageNext = pageCurrent + 1;
+                        pagination_string += '<li class="page-item"><a href="" class="page-link"  data-page=' + pageNext + '>Next</a></li>';
+                    }
+                    $(".pagination").html(pagination_string);
+                },
+                error: function (errormessage) {
+                    toastr.error(errormessage.responseText);
+                }
+            });
+
+        }
+        function LoadSuccessOrder(txtSearch, page) {
+            $.ajax({
+                url: "/Admin/Bill/GetSuccessOrder",
+                type: "GET",
+                data: { txtSearch: txtSearch, page: page },
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (result) {
+                    ClearZone();
+                    var count = 0;
+                    var html = '';
+                    $.each(result.data, function (key, item) {
+                        count++;
+                        html += '<tr>';
+                        html += '<td class="align-middle">' + ((result.pageCurrent - 1) * result.pageSize + count) + '</td>';
+                        html += '<td class="align-middle">' + item.ReceiverName + '</td>';
+                        html += '<td class="align-middle">' + item.ReceiverAddress + '</td>';
+                        html += '<td class="align-middle">' + item.PayType + '</td>';
+                        html += '<td class="align-middle">' + convertToJavaScriptDate(item.BuyDate) + '</td>';
+                        html += '<td class="align-middle d-flex justify-content-center">';
+                        html += '<button type="button" class="col-2 btn btn-sm btn-info m-1 d-flex justify-content-center align-items-center"  onclick="Detail(' + item.ID_Bill + ');" data-bs-toggle="modal" data-bs-target="#modal-detail"><i class="fas fa-eye "></i></button>';
+                        html += ' </td >';
+                        html += '</tr>';
+                    });
+                    $('.tbody-light').html(html);
+                    $('#title-tab').text("Đơn hàng đã giao thành công");
+
+                    //create pagination
+                    var pagination_string = "";
+                    pageCurrent = result.pageCurrent;
+                    var numSize = result.numSize;
+                    lastPage = numSize;
+
+                    $('#dt-material-checkbox_info').text(result.data.length + '/' + result.all.length);
+
+                    //create button previous
+                    if (pageCurrent > 1) {
+                        var pagePrevious = pageCurrent - 1;
+                        pagination_string += '<li class="page-item"><a href="" class="page-link" data-page=' + pagePrevious + '>Previous</a></li>';
+                    }
+
+                    for (i = 1; i <= numSize; i++) {
+                        if (i == pageCurrent) {
+                            pagination_string += '<li class="page-item active"><a href="" class="page-link" data-page=' + i + '>' + pageCurrent + '</a></li>';
+                        } else {
+                            pagination_string += '<li class="page-item"><a href="" class="page-link" data-page=' + i + '>' + i + '</a></li>';
+                        }
+                    }
+
+                    //create button next
+                    if (pageCurrent > 0 && pageCurrent < numSize) {
+                        var pageNext = pageCurrent + 1;
+                        pagination_string += '<li class="page-item"><a href="" class="page-link"  data-page=' + pageNext + '>Next</a></li>';
+                    }
+                    $(".pagination").html(pagination_string);
+                },
+                error: function (errormessage) {
+                    toastr.error(errormessage.responseText);
+                }
+            });
+
+        }
+        function LoadCancelOrder(txtSearch, page) {
+            $.ajax({
+                url: "/Admin/Bill/GetCancelOrder",
+                type: "GET",
+                data: { txtSearch: txtSearch, page: page },
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (result) {
+                    ClearZone();
+                    var count = 0;
+                    var html = '';
+                    $.each(result.data, function (key, item) {
+                        count++;
+                        html += '<tr>';
+                        html += '<td class="align-middle">' + ((result.pageCurrent - 1) * result.pageSize + count) + '</td>';
+                        html += '<td class="align-middle">' + item.ReceiverName + '</td>';
+                        html += '<td class="align-middle">' + item.ReceiverAddress + '</td>';
+                        html += '<td class="align-middle">' + item.PayType + '</td>';
+                        html += '<td class="align-middle">' + convertToJavaScriptDate(item.BuyDate) + '</td>';
+                        html += '<td class="align-middle d-flex justify-content-center">';
+                        html += '<button type="button" class="col-2 btn btn-sm btn-info m-1 d-flex justify-content-center align-items-center"  onclick="Detail(' + item.ID_Bill + ');" data-bs-toggle="modal" data-bs-target="#modal-detail"><i class="fas fa-eye "></i></button>';
+                        html += '</td>';
+                        html += '</tr>';
+                    });
+                    $('.tbody-light').html(html);
+                    $('#title-tab').text("Đơn hàng đã hủy");
+
+                    //create pagination
+                    var pagination_string = "";
+                    pageCurrent = result.pageCurrent;
+                    var numSize = result.numSize;
+                    lastPage = numSize;
+
+                    $('#dt-material-checkbox_info').text(result.data.length + '/' + result.all.length);
+
+                    //create button previous
+                    if (pageCurrent > 1) {
+                        var pagePrevious = pageCurrent - 1;
+                        pagination_string += '<li class="page-item"><a href="" class="page-link" data-page=' + pagePrevious + '>Previous</a></li>';
+                    }
+
+                    for (i = 1; i <= numSize; i++) {
+                        if (i == pageCurrent) {
+                            pagination_string += '<li class="page-item active"><a href="" class="page-link" data-page=' + i + '>' + pageCurrent + '</a></li>';
+                        } else {
+                            pagination_string += '<li class="page-item"><a href="" class="page-link" data-page=' + i + '>' + i + '</a></li>';
+                        }
+                    }
+
+                    //create button next
+                    if (pageCurrent > 0 && pageCurrent < numSize) {
+                        var pageNext = pageCurrent + 1;
+                        pagination_string += '<li class="page-item"><a href="" class="page-link"  data-page=' + pageNext + '>Next</a></li>';
+                    }
+                    $(".pagination").html(pagination_string);
+                },
+                error: function (errormessage) {
+                    toastr.error(errormessage.responseText);
+                }
+            });
+
+        }
+        function Detail(ID) {
+            $.ajax({
+                url: "/Admin/Bill/GetById/" + ID,
+                typr: "GET",
+                contentType: "application/json;charset=UTF-8",
+                dataType: "json",
+                success: function (result) {
+                    $('#id-detail').text(result.bill.ID_Bill);
+                    $('#name-detail').text(result.bill.ReceiverName);
+                    $('#address-detail').text(result.bill.ReceiverAddress);
+                    $('#phone-detail').text(result.bill.ReceiverPhone);
+                    var status = "";
+                    switch (result.bill.Status) {
+                        case 2:
+                            status = "Đơn mới";
+                            break;
+                        case 3:
+                            status = "Đã tiếp nhận";
+                            break;
+                        case 4:
+                            status = "Đang vận chuyển";
+                            break;
+                        case 5:
+                            status = "Giao thành công";
+                            break;
+                        case 6:
+                            status = "Đã hủy";
+                            break;
+                    }
+                    $('#status-detail').text(status);
+                    $('#payType-detail').text(result.bill.PayType);
+                    $('#note-detail').text(result.bill.Note);
+
+                    var html = '';
+                    var count = 0;
+                    var totalMoney = 0;
+                    $.each(result.product, function (key, item) {
+                        count++;
+                        html += '<div class="row mb-2 mb-sm-0 py-25">';
+                        html += '<div class="d-none d-sm-block col-1">' + count + '</div>';
+                        html += '<div class="col-9 col-sm-5">' + item.Name + '</div>';
+                        html += '<div class="d-none d-sm-block col-2">' + result.billDetail[count - 1].Amount + '</div>';
+                        html += '<div class="d-none d-sm-block col-2 text-95">' + money.format(result.billDetail[count - 1].CurrentlyPrice / result.billDetail[count - 1].Amount) + '</div>';
+                        html += '<div class="col-2 text-secondary-d2">' + money.format(result.billDetail[count - 1].CurrentlyPrice) + '</div>';
+                        html += '</div>';
+                        html += '<hr />';
+                        totalMoney += result.billDetail[count - 1].CurrentlyPrice;
+                    });
+                    $('#product-detail').html(html);
+                    $('#totalMoney').text(money.format(totalMoney));
+                },
+                error: function (errormessage) {
+                    toastr.error(errormessage.responseText);
+                }
+            });
+        }
+        let id = 0;
+        var select;
+
+        function Edit(ID) {
+            if (edit == false)
+                return;
+            id = ID;
+            var selector = $('select');
+            $.each(selector, function (key, item) {
+                if (item.id == ID) {
+                    if (item.value != 0)
+                        select = item.value;
+                    else {
+                        toastr.error('Sửa không thành công!');
+                        return false;
+                    }
+                }
+            });
+            $.ajax({
+                url: "/Admin/Bill/GetById/" + ID,
+                typr: "GET",
+                contentType: "application/json;charset=UTF-8",
+                dataType: "json",
+                success: function (result) {
+                    GetById(result, select);
+                },
+                error: function (errormessage) {
+                    toastr.error(errormessage.responseText);
+                }
+            });
+            return false;
+        }
+        function GetById(getBill, status) {
+            let bill = {};
+
+            bill["ID_Bill"] = id;
+            bill["ReceiverName"] = getBill.bill.ReceiverName;
+            bill["ID_Account"] = getBill.bill.ID_Account;
+            bill["ReceiverAddress"] = getBill.bill.ReceiverAddress;
+            bill["ReceiverEmail"] = getBill.bill.ReceiverEmail;
+            bill["ReceiverPhone"] = getBill.bill.ReceiverPhone;
+            bill["PayType"] = getBill.bill.PayType;
+            bill["Note"] = getBill.bill.Note;
+            bill["PayType"] = getBill.bill.PayType;
+            bill["BuyDate"] = convertToJavaScriptDate(getBill.bill.BuyDate);
+            bill["Status"] = status;
+
+            $.ajax({
+                url: "/Admin/Bill/Edit",
+                data: JSON.stringify(bill),
+                type: "POST",
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (result) {
+                    Search(pageCurrent);
+                    toastr.success('Sửa thành công!');
+                },
+                error: function (errormessage) {
+                    toastr.error('Sửa không thành công!');
+                }
+            });
+        }
+        function ClearZone() {
+            $(".tbody-light").empty();
+            $(".pagination").empty();
+        }
+        const Search = (page) => {
+            var txtSearch = $("#txtSearch").val();
+            if (txtSearch != "") {
+                LoadData(txtSearch, page);
+            }
+            else {
+                LoadData(null, page);
+            }
+        }
+        $('#txtSearch').keyup(() => {
+            Search(1);
+        });
+        $('#txtSearch').keydown(() => {
+            Search(1);
+        });
+    </script>
+}

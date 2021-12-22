@@ -1,0 +1,173 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+}
+<section class="banner_area">
+    <div class="banner_inner d-flex align-items-center">
+        <div class="container">
+            <div class="banner_content d-md-flex justify-content-between align-items-center">
+                <div class="mb-3 mb-md-0">
+                    <h2>Giỏ hàng</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="cart_area">
+    <div class="container">
+        <div class="cart_inner">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead class="thead">
+                        <tr>
+                            <th scope="col">Sản phẩm</th>
+                            <th scope="col">Giá</th>
+                            <th scope="col">Số lượng</th>
+                            <th scope="col">Tổng</th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-data">
+                        @*DATA*@
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+@section Script{
+    <script>
+        let formatter = new Intl.NumberFormat({ style: 'currency', currency: 'VND' });
+        $(document).ready(function () {
+            LoadData();
+
+        });
+
+        function LoadData() {
+            $.ajax({
+                url: "/Cart/GetAll",
+                type: "GET",
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (result) {
+                    var html = '';
+                    if (result.cart.length != 0) {
+                        $('.thead').show();
+                        var count = -1;
+                        $.each(result.product, function (key, item) {
+                            count++;
+                            var specialSymbol = "'sst" + item.ID_Product + "'";
+                            html += ' <tr id = "' + item.ID_Product + '">';
+                            html += '<td>';
+                            html += '<div class="media d-flex">';
+                            html += '<div class="col-3">';
+                            html += '<img src="/wwwroot/ImageProducts/' + item.Image + '" alt="" class="img-fluid">';
+                            html += '</div>';
+                            html += '<div class="media-body col-9">';
+                            html += '<p style="word-break: break-word">' + item.Name + '</p>';
+                            html += '</div>';
+                            html += '</div>';
+                            html += '</td>';
+                            html += '<td>';
+                            html += '<h5 class="price" id="Price' + item.ID_Product + '">' + formatter.format(item.Price * (100 - item.Discount)/100) + '<span>đ</span></h5>';
+                            html += '</td>';
+                            html += '<td>';
+                            html += '<div class="product_count">';
+                            html += '<input type="text" name="qty" class="amount" id="sst' + item.ID_Product + '" maxlength="12" value="' + result.cart[count].Amount + '" title="Quantity:" onchange="Edit(' + item.ID_Product + ',' + result.cart[count].ID_Cart + ');">';
+                            html += '<button onclick=" var result = document.getElementById(' + specialSymbol + '); var sst = result.value; if( !isNaN( sst )) result.value++; Edit(' + item.ID_Product + ',' + result.cart[count].ID_Cart + ');return false;" class="increase items-count" type="button">';
+                            html += '<i class="lnr lnr-chevron-up"></i>';
+                            html += '</button>';
+                            html += '<button onclick="var result = document.getElementById(' + specialSymbol + '); var sst = result.value; if( !isNaN( sst ) &amp;&amp; sst > 0 ) result.value--;Edit(' + item.ID_Product + ',' + result.cart[count].ID_Cart + ');return false; " class="reduced items-count" type="button">';
+                            html += '<i class="lnr lnr-chevron-down"></i>';
+                            html += '</button>';
+                            html += '</div>';
+                            html += '</td>';
+                            html += '<td>';
+                            html += '<h5 class="money" id="Money' + item.ID_Product + '">' + formatter.format(result.cart[count].Amount * item.Price * (100 - item.Discount) / 100) + 'đ</h5>';
+                            html += '</td>';
+                            html += '</tr>';
+                        });
+                        html += ' <tr class="out_button_area">';
+                        html += '<td>';
+                        html += '</td>';
+                        html += '<td>';
+                        html += '</td>';
+                        html += '<td>';
+                        html += 'Tổng tiền';
+                        html += '</td>';
+                        html += '<td>';
+                        html += '<div >';
+                        html += '<h5 id="TotalMoney">123456</h5>';
+                        html += '</div>';
+                        html += '</td>';
+                        html += '</tr>';
+                        html += ' <tr class="out_button_area">';
+                        html += '<td colspan="4">';
+                        html += '<div class="d-flex justify-content-end">';
+                        html += '<a class="gray_btn m-3" href="/Product/Index">Tiếp tục mua hàng</a>';
+                        html += '<a class="main_btn m-3" href="/Bill/Index">Đặt hàng</a>';
+                        html += '</div>';
+                        html += '</td>';
+                        html += '</tr>';
+                        $('.table-data').html(html);
+                        TotalPrice();
+                    }
+                    else {
+                        $('.thead').hide();
+                        html +='<h1 class="text-center">Không có sản phẩm nào trong rỏ hàng!</h1>';
+                        html += ' <tr class="out_button_area">';
+                        html += '<td colspan="4">';
+                        html += '<div class="d-flex justify-content-center">';
+                        html += '<a class="gray_btn" href="/Product/Index">Tiếp tục mua hàng</a>';
+                        html += '</div>';
+                        html += '</td>';
+                        html += '</tr>';
+                        $('.table-data').html(html);
+                    }
+                },
+                error: function (errormessage) {
+                    toastr.error(errormessage.responseText);
+                }
+
+            });
+        }
+        function Edit(id, idCard) {
+
+            var amount = parseInt($('#sst' + id).val());
+            var price = parseInt($('#Price' + id).text().replaceAll('.', '').replace('đ', ''));
+            $('#Money' + id).html(formatter.format(price * amount));
+            TotalPrice();
+
+            let cart = {};
+            cart["ID_Product"] = id;
+                cart["ID_Cart"] = idCard;
+            cart["Amount"] = amount;
+            cart["ID_Account"] = @Session["ID_Account"];
+
+            $.ajax({
+                url: "/Cart/Edit",
+                data: JSON.stringify(cart),
+                type: "POST",
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (result) {
+                  LoadData();
+                },
+                error: function (errormessage) {
+                }
+            });
+        }
+        function TotalPrice() {
+            var totalPrice = 0;
+            var priceProducts = $('.money');
+            $.each(priceProducts, function (key, item) {
+                totalPrice += parseInt(item.innerText.replaceAll('.', '').replace('đ',''))
+            });
+            $('#TotalMoney').empty();
+            $('#TotalMoney').html(formatter.format(totalPrice));
+        }
+
+    </script>
+}

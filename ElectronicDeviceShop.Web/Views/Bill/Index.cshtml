@@ -1,0 +1,178 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<section class="checkout_area section_gap">
+    <div class="container">
+        <div class="billing_details">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h3>Chi tiết hóa đơn</h3>
+                    <form>
+                        <div class="form-row">
+                            <div class="col-md-12 mb-3">
+                                <label for="ReceiverName">Tên người nhận</label>
+                                <input type="text" class="form-control" id="ReceiverName" value="" required>
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <label for="ReceiverAddress">Địa chỉ người nhận</label>
+                                <input type="text" class="form-control" id="ReceiverAddress" value="" required>
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <label for="ReceiverEmail">Email người nhận</label>
+                                <input type="text" class="form-control" id="ReceiverEmail" value="" required>
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <label for="ReceiverPhone">SĐT người nhận</label>
+                                <input type="text" class="form-control" id="ReceiverPhone" value="" required>
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <label for="Note">Ghi chú</label>
+                                <input type="text" class="form-control" id="Note" value="">
+                            </div>
+                            <div class="col-md-12 mb-3 w-100">
+                                <label for="PayType" class="fw-bold ">Kiểu thanh toán</label>
+                                <select id="PayType" class="form-control w-100">
+                                    <option class="w-100" value="0" selected>Thẻ</option>
+                                    <option class="w-100" value="1">Trả sau</option>
+                                </select>
+                            </div>
+                                <div class="order_box">
+                                    <section class="cart_area">
+                                        <div class="container">
+                                            <div class="cart_inner">
+                                                <div class="table-responsive">
+                                                    <table class="table">
+                                                        <thead class="thead">
+                                                            <tr>
+                                                                <th scope="col">Sản phẩm</th>
+                                                                <th scope="col">Giá</th>
+                                                                <th scope="col">Số lượng</th>
+                                                                <th scope="col">Tổng</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody class="table-data">
+                                                            @*DATA*@
+
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </section>
+
+                                    <button class="w-100 border-0" type="" onclick="Buy();"><a class="main_btn">Đặt hàng</a></button>
+
+                                </div>
+                            </div>
+
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+@section Script{
+    <script>
+        let formatter = new Intl.NumberFormat({ style: 'currency', currency: 'VND' });
+        $(document).ready(function () {
+            LoadData();
+        });
+
+        function LoadData() {
+            $.ajax({
+                url: "/Bill/GetAllProductInCart",
+                type: "GET",
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (result) {
+                    //Acoount
+                    $('#ReceiverName').val(result.account.FullName);
+                    $('#ReceiverPhone').val($.trim(result.account.Phone));
+                    $('#ReceiverAddress').val(result.account.Address);
+                    $('#ReceiverEmail').val(result.account.Email);
+
+                    //Bill
+                    var html = '';
+                    var totalMoney = 0;
+                    if (result.cart.length != 0) {
+                        $('.thead').show();
+                        var count = -1;
+                        $.each(result.product, function (key, item) {
+                            count++;
+                            totalMoney += item.Price * (100 - item.Discount) / 100 * result.cart[count].Amount;
+                            html += ' <tr id = "' + item.ID_Product + '">';
+                            html += '<td>';
+                            html += '<div class="media d-flex">';
+                            html += '<div class="media-body col-9">';
+                            html += '<p style="word-break: break-word">' + item.Name + '</p>';
+                            html += '</div>';
+                            html += '</div>';
+                            html += '</td>';
+                            html += '<td>';
+                            html += '<h5 class="price" id="Price' + item.ID_Product + '">' + formatter.format(item.Price * (100 - item.Discount)/100) + '<span>đ</span></h5>';
+                            html += '</td>';
+                            html += '<td>';
+                            html += '<div class="product_count">' + result.cart[count].Amount;
+                            html += '</div>';
+                            html += '</td>';
+                            html += '<td>';
+                            html += '<h5 class="money" id="Money' + item.ID_Product + '">' + formatter.format(result.cart[count].Amount * item.Price * (100 - item.Discount) / 100) + 'đ</h5>';
+                            html += '</td>';
+                            html += '</tr>';
+                        });
+                        html += '<tr id="3">';
+                        html += '<td></td>';
+                        html += '<td></td>';
+                        html += '<td><h5>Tổng Tiền</h5></td>';
+                        html += '<td><h5>' + formatter.format(totalMoney) + '</h5></td>';
+                        html += '</tr>';
+                        $('.table-data').html(html);
+                    }
+                },
+                error: function (errormessage) {
+                    toastr.error(errormessage.responseText);
+                }
+
+            });
+        }
+
+        function Buy() {
+
+            let bill = {};
+            bill["ID_Account"] = @Session["ID_Account"];
+            bill["ReceiverName"] = $('#ReceiverName').val();
+            bill["ReceiverAddress"] = $('#ReceiverAddress').val();
+            bill["ReceiverEmail"] = $('#ReceiverEmail').val();
+            bill["ReceiverPhone"] = $('#ReceiverPhone').val();
+            bill["Note"] = $('#Note').val();
+            bill["PayType"] = $(".current").text();
+            bill["Status"] = 2;
+
+            $.ajax({
+                url: "/Bill/Create",
+                data: JSON.stringify(bill),
+                type: "POST",
+                processData: false,
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (result) {
+                    if (result) {
+                        toastr.success('Đặt hàng thành công!');
+                        window.location.href = "/Product/Index";
+                    }
+                    else {
+                        toastr.error('Đặt hàng không thành thành công!');
+                        return false;
+                    }
+                },
+                error: function (errormessage) {
+                    alert(errormessage.responseText);
+                    toastr.error('Đặt hàng không thành thành công!');
+                }
+            });
+        }
+    </script>
+}

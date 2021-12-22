@@ -1,0 +1,420 @@
+﻿
+@{
+    ViewBag.Title = "Register";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section Style{
+    <link href="~/wwwroot/css/Login/style.css" rel="stylesheet" />
+}
+<div class="img js-fullheight" style=" background: linear-gradient( rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5) ), url(/wwwroot/img/bg.jpg);">
+    <section class="ftco-section">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-6 col-lg-4">
+                    <div class="login-wrap p-0">
+                        <h3 class="mb-4 text-center">ĐĂNG KÝ</h3>
+                        <form action="~/Account/Index" class="signin-form">
+                            <div class="form-group">
+                                <input type="text" class="form-control" name="UserName" id="UserName" placeholder="Username" required>
+                                <div class="valid-feedback" id="error_userName"></div>
+                            </div>
+                            <div class="form-group">
+                                <input id="password-field" type="password" class="form-control" name="Password" placeholder="Password" required>
+                                <div class="valid-feedback" id="error_password"></div>
+                            </div>
+                            <div class="form-group">
+                                <input id="confirmPassword-field" type="password" class="form-control" name="ConfirmPassword" placeholder="Xác nhận Password" required>
+                                <div class="valid-feedback" id="error_confirmPassword"></div>
+                            </div>
+                            <div class="form-group d-md-flex">
+                                <div class="w-50">
+                                    <label class="checkbox-wrap checkbox-primary">
+                                        Hiển thị mật khẩu
+                                        <input type="checkbox" class="ShowPass">
+                                        <span class="checkmark"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <button type="submit" class="form-control btn btn-primary submit px-3" onclick="Add();">Đăng ký</button>
+                            </div>
+
+                        </form>
+                        <p class="w-100 text-center">&mdash; Bạn đã có tài khoản? &mdash;</p>
+                        <div class="social d-flex text-center">
+                            <a href="/Account/Index" class="px-2 py-2 mr-md-1 rounded">Đăng nhập</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+@section Script{
+    <script>
+        $(document).ready(function () {
+            $('.valid-feedback').show();
+        });
+        $('.ShowPass').change(function () {
+            $('.ShowPass').is(":checked") == true ? $('#confirmPassword-field').attr('type', 'text') : $('#confirmPassword-field').attr('type', 'password');
+            $('.ShowPass').is(":checked") == true ? $('#password-field').attr('type', 'text') : $('#password-field').attr('type', 'password');
+        });
+        function GetRole(role) {
+            switch (role) {
+                case 0:
+                    return "Admin";
+                case 1:
+                    return "Nhân viên";
+                case 2:
+                    return "Khách hàng";
+                default:
+                    return "";
+            }
+        }
+        function UploadImage() {
+            // Checking whether FormData is available in browser
+            if (window.FormData !== undefined) {
+
+                var fileUpload = $("#Avatar").get(0);
+                var files = fileUpload.files;
+
+                // Create FormData object
+                var fileData = new FormData();
+
+                // Looping over all files and add it to FormData object
+                for (var i = 0; i < files.length; i++) {
+                    fileData.append(files[i].name, files[i]);
+                }
+
+                $.ajax({
+                    url: '/Account/UploadFiles',
+                    type: "POST",
+                    contentType: false, // Not to set any content header
+                    processData: false, // Not to process data
+                    data: fileData,
+                    success: function (result) {
+                        return true;
+                    },
+                    error: function (err) {
+                        return false;
+                    }
+                });
+            } else {
+                return false;
+            }
+        }
+        function GetImage() {
+            var fileUpload = $("#Avatar").get(0);
+            var files = fileUpload.files;
+
+            // Create FormData object
+            var fileData = new FormData();
+
+            // Looping over all files and add it to FormData object
+            for (var i = 0; i < files.length; i++) {
+                fileData.append(i, files[i].name);
+            }
+            return fileData;
+        }
+        function Add() {
+            CheckUser();
+            errorUserName();
+            errorPassword();
+            errorConfirmPassword();
+
+            if (checkError)
+                return;
+
+            let account = {};
+            account["UserName"] = $('#UserName').val();
+            account["Password"] = $('#password-field').val();
+            account["Role"] = 2;
+            account["Status"] = 1;
+
+            $.ajax({
+                url: "/Account/Create",
+                data: JSON.stringify(account),
+                type: "POST",
+                processData: false,
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (result) {
+                    if (result) {
+                        toastr.success('Đăng ký thành công!');
+                    }
+                    else {
+                        toastr.error('Đăng ký không thành thành công!');
+                        return false;
+                    }
+                },
+                error: function (errormessage) {
+                    alert(errormessage.responseText);
+                    toastr.error('Đăng ký không thành thành công!');
+                }
+            });
+        }
+        let id = 0;
+        function GetById(ID) {
+            id = ID;
+            ClearValidation();
+
+            $.ajax({
+                url: "/Account/GetById/" + ID,
+                typr: "GET",
+                contentType: "application/json;charset=UTF-8",
+                dataType: "json",
+                success: function (result) {
+                    $('#UserName').val(result.UserName);
+                    $('#UserName').attr("disabled", "disabled");
+                    $('#FullName').val(result.FullName);
+                    $('#Password').val(result.Password);
+                    $('#Phone').val(result.Phone);
+                    $('#Address').val(result.Address);
+                    $('#Email').val(result.Email);
+                    $('#Role').val(result.Role);
+                    $("#imgPreview").attr("src", '/wwwroot/ImageProducts/' + result.Avatar);
+                    $('#Add').hide();
+                    $('#Edit').show();
+                },
+                error: function (errormessage) {
+                    toastr.error(errormessage.responseText);
+                }
+            });
+            return false;
+        }
+        function Edit() {
+            errorUserName();
+            errorPassword();
+            errorPhone();
+            errorEmail();
+            if (checkError)
+                return;
+
+            var fileData = GetImage();
+            let account = {};
+            account["ID_Account"] = id;
+            account["UserName"] = $('#UserName').val();
+            account["Password"] = $('#Password').val();
+            account["FullName"] = $('#FullName').val();
+            account["Phone"] = $('#Phone').val();
+            account["Address"] = $('#Address').val();
+            account["Email"] = $('#Email').val();
+            account["Role"] = $('#Role').val();
+            if ($("#Avatar").get(0).files.length != 0)
+                account["Avatar"] = fileData.get(0);
+            else
+                account["Avatar"] = $("#imgPreview").attr('src').split('/')[3];
+
+            $.ajax({
+                url: "/Account/Edit",
+                data: JSON.stringify(account),
+                type: "POST",
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (result) {
+                    $('#modal-add-edit').modal('hide');
+                    UploadImage();
+                    Search(pageCurrent);
+                    ClearTextBox();
+                    toastr.success('Sửa thành công!');
+                },
+                error: function (errormessage) {
+                    toastr.error('Sửa không thành công!');
+                }
+            });
+        }
+        function ClearTextBox() {
+            $('#UserName').val('');
+            $('#UserName').removeAttr("disabled");
+            $('#Password').val('');
+            $('#FullName').val('');
+            $('#Phone').val('');
+            $('#Address').val('');
+            $('#Email').val('');
+            $('#Role').val(2);
+            $('#Edit').hide();
+            $('#Add').show();
+            $('#Status').show();
+
+            ClearValidation();
+        }
+        function ClearValidation() {
+            $('#UserName').removeClass('is-invalid');
+            $('#UserName').removeClass('is-valid');
+            $('#Password').removeClass('is-invalid');
+            $('#Password').removeClass('is-valid');
+            $('#Avatar').removeClass('is-invalid');
+            $('#Avatar').removeClass('is-valid');
+            $("#imgPreview").attr("src", '/wwwroot/ImageProducts/no-image-icon-0.jpg');
+            $('#error_userName').hide();
+            $('#error_password').hide();
+            $('#error_avatar').hide();
+        }
+        $('#Avatar').change(function () {
+            const [file] = $('#Avatar').get(0).files;
+            if (file) {
+                imgPreview.src = URL.createObjectURL(file);
+            } else {
+                imgPreview.src = '/wwwroot/ImageProducts/no-image-icon-0.jpg';
+            }
+            errorAvatar();
+        });
+        function ResetPassword() {
+            $('#Password').val('abcd1234!');
+            errorPassword();
+        }
+        //Validations
+        let passwordRegex = /^\w.{8,}$/;
+        function CheckUser() {
+            let account = {};
+            account["UserName"] = $('#UserName').val();
+            account["Password"] = $('#password-field').val();
+            account["Role"] = 2;
+            account["Status"] = 1;
+
+            $.ajax({
+                url: "/Account/CheckUserName",
+                data: JSON.stringify(account),
+                type: "POST",
+                processData: false,
+                contentType: "application/json;charset=UTF-8",
+                dataType: "json",
+                success: function (result) {
+                    if (result) {
+                        $('#error_userName').hide();
+                        $('#UserName').addClass('is-valid');
+                        $('#UserName').removeClass('is-invalid');
+                        checkError = false;
+                    }
+                    else {
+                        $('#error_userName').show();
+                        $('#error_userName').addClass('invalid-feedback');
+                        $('#error_userName').removeClass('valid-feedback');
+                        $('#UserName').addClass('is-invalid');
+                        $('#error_userName').text("Tài khoản đã tồn tại!");
+                        checkError = true;
+                    }
+                },
+                error: function (errormessage) {
+                    $('#error_userName').show();
+                    $('#error_userName').addClass('invalid-feedback');
+                    $('#error_userName').removeClass('valid-feedback');
+                    $('#UserName').addClass('is-invalid');
+                    $('#error_userName').text("Tài khoản đã tồn tại!");
+                    checkError = true;
+                }
+            });
+        }
+        let checkError = false;
+        const errorUserName = () => {
+            if ($('#UserName').val() == '') {
+                $('#error_userName').show();
+                $('#error_userName').addClass('invalid-feedback');
+                $('#error_userName').removeClass('valid-feedback');
+                $('#UserName').addClass('is-invalid');
+                $('#error_userName').text("Tên không được để trống!");
+                checkError = true;
+            }
+            else {
+                $('#error_userName').hide();
+                $('#UserName').addClass('is-valid');
+                $('#UserName').removeClass('is-invalid');
+                checkError = false;
+            }
+        }
+        $('#UserName').keyup(() => {
+            errorUserName();
+            CheckUser();
+        });
+        $('#UserName').keydown(() => {
+
+            errorUserName();
+
+        });
+        const errorConfirmPassword = () => {
+            if ($('#confirmPassword-field').val() == '') {
+                $('#error_confirmPassword').show();
+                $('#error_confirmPassword').addClass('invalid-feedback');
+                $('#error_confirmPassword').removeClass('valid-feedback');
+                $('#confirmPassword-field').addClass('is-invalid');
+                $('#error_confirmPassword').text("Không được để trống!");
+                checkError = true;
+            }
+            else if ($('#confirmPassword-field').val().length < 8) {
+                $('#error_confirmPassword').show();
+                $('#error_confirmPassword').addClass('invalid-feedback');
+                $('#error_confirmPassword').removeClass('valid-feedback');
+                $('#confirmPassword-field').addClass('is-invalid');
+                $('#error_confirmPassword').text("Mật khẩu dài hơn 8 kí tự!");
+                checkError = true;
+            }
+            else if (!passwordRegex.test($('#confirmPassword-field').val())) {
+                $('#error_confirmPassword').show();
+                $('#error_confirmPassword').addClass('invalid-feedback');
+                $('#error_confirmPassword').removeClass('valid-feedback');
+                $('#confirmPassword-field').addClass('is-invalid');
+                $('#error_confirmPassword').text("Mật khẩu có chữ, số và kí tự!");
+                checkError = true;
+            }
+            else if ($('#confirmPassword-field').val() != $('#password-field').val()) {
+                $('#error_confirmPassword').show();
+                $('#error_confirmPassword').addClass('invalid-feedback');
+                $('#error_confirmPassword').removeClass('valid-feedback');
+                $('#confirmPassword-field').addClass('is-invalid');
+                $('#error_confirmPassword').text("Mật khẩu không trùng khớp!");
+                checkError = true;
+            }
+            else {
+                $('#error_confirmPassword').hide();
+                $('#confirmPassword-field').addClass('is-valid');
+                $('#confirmPassword-field').removeClass('is-invalid');
+                checkError = false;
+            }
+        }
+        $('#confirmPassword-field').keyup(() => {
+            errorConfirmPassword();
+        });
+        $('#confirmPassword-field').keydown(() => {
+            errorConfirmPassword();
+        });
+        const errorPassword = () => {
+            if ($('#password-field').val() == '') {
+                $('#error_password').show();
+                $('#error_password').addClass('invalid-feedback');
+                $('#error_password').removeClass('valid-feedback');
+                $('#password-field').addClass('is-invalid');
+                $('#error_password').text("Mật khẩu không được để trống!");
+                checkError = true;
+            }
+            else if ($('#password-field').val().length < 8) {
+                $('#error_password').show();
+                $('#error_password').addClass('invalid-feedback');
+                $('#error_password').removeClass('valid-feedback');
+                $('#password-field').addClass('is-invalid');
+                $('#error_password').text("Mật khẩu dài hơn 8 kí tự!");
+                checkError = true;
+            }
+            else if (!passwordRegex.test($('#password-field').val())) {
+                $('#error_password').show();
+                $('#error_password').addClass('invalid-feedback');
+                $('#error_password').removeClass('valid-feedback');
+                $('#password-field').addClass('is-invalid');
+                $('#error_password').text("Mật khẩu có chữ, số và kí tự!");
+                checkError = true;
+            }
+            else {
+                $('#error_password').hide();
+                $('#password-field').addClass('is-valid');
+                $('#password-field').removeClass('is-invalid');
+                checkError = false;
+            }
+        }
+        $('#password-field').keyup(() => {
+            errorPassword();
+        });
+        $('#password-field').keydown(() => {
+            errorPassword();
+        });
+
+    </script>
+}

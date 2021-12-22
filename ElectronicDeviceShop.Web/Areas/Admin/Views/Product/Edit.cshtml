@@ -1,0 +1,104 @@
+﻿<!-- modal edit -->
+<div class="modal" id="modal-edit" tabindex="-1" role="dialog" aria-labelledby="mediumModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered " role="document">
+        <div class="modal-content ">
+            <div class="modal-header ">
+                <div class="col-10 border-bottom-0 ">
+                    <h3 class="page-title ">Chỉnh sửa Sản phẩm</h3>
+                </div>
+                <button type="button" class="close btn-lg" data-bs-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body ">
+                <div class="form-group ">
+                    <label for="Name " class="fw-bold ">Tên Sản phẩm</label>
+                    <input type="text" class="form-control form-control-lg " name="Name " id="Name " placeholder="" value="" required="">
+                    <div class="valid-feedback "></div>
+                </div>
+                <div class="form-group ">
+                    <label for="UrlSlug " class="fw-bold ">Url Slug</label>
+                    <input type="text" class="form-control form-control-lg " name="UrlSlug " id="UrlSlug " placeholder="URL Slug " readonly value=" " required="">
+                    <div class="valid-feedback "></div>
+                </div>
+                <div class="form-group ">
+                    <label for="Price" class="fw-bold ">Giá Sản phẩm</label>
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control form-control-lg" name="Price" id="Price" placeholder="" value="" required="">
+                        <div class="input-group-append">
+                            <span class="input-group-text">VNĐ</span>
+                        </div>
+                    </div>
+                    <div class="valid-feedback "></div>
+                </div>
+                <div class="form-group ">
+                    <label for="Model" class="fw-bold ">Model</label>
+                    <input type="text" class="form-control form-control-lg " name="Model" id="Model" placeholder="" value="" required="">
+                    <div class="valid-feedback "></div>
+                </div>
+                <div class="form-group ">
+                    <label for="Amount" class="fw-bold ">Số Lượng</label>
+                    <input type="text" class="form-control form-control-lg" name="Amount" id="Amount" placeholder="" value="" required="">
+                    <div class="valid-feedback "></div>
+                </div>
+                <div class="form-group ">
+                    <label for="Guarantee" class="fw-bold ">Bảo hành</label>
+                    <input type="text" class="form-control form-control-lg" name="Guarantee" id="Guarantee" placeholder="" value="" required="">
+                    <div class="valid-feedback "></div>
+                </div>
+                <div class="form-group ">
+                    <label for="Origin" class="fw-bold ">Nguồn gốc</label>
+                    <input type="text" class="form-control form-control-lg" name="Origin" id="Origin" placeholder="" value="" required="">
+                    <div class="valid-feedback "></div>
+                </div>
+                <div class="form-group ">
+                    <label for="Discount" class="fw-bold ">Giảm giá</label>
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control form-control-lg" name="Discount" id="Price" placeholder="" value="" required="">
+                        <div class="input-group-append">
+                            <span class="input-group-text">%</span>
+                        </div>
+                    </div>
+                    <div class="valid-feedback "></div>
+                </div>
+                <div class="form-group ">
+                    <label for="ShortDescription" class="fw-bold ">Mô tả ngắn</label>
+                    <input type="text" class="form-control form-control-lg" name="ShortDescription" id="ShortDescription" placeholder="" value="" required="">
+                    <div class="valid-feedback "></div>
+                </div>
+                <div class="form-group ">
+                    <label for="Detail" class="fw-bold ">Chi tiết</label>
+                    <input type="text" class="form-control form-control-lg" name="Detail" id="Detail" placeholder="" value="" required="">
+                    <div class="valid-feedback "></div>
+                </div>
+                <div class="form-group">
+                    <label for="Categories" class="fw-bold ">Danh mục</label>
+                    <select id="Categories" class="form-control form-control-lg">
+                        <option selected="">Máy giặt</option>
+                        <option>TV</option>
+                    </select>
+                    <div class="valid-feedback "></div>
+                </div>
+                <div class="form-group">
+                    <label for="Suppliers" class="fw-bold ">Nhà cung cấp</label>
+                    <select id="Suppliers" class="form-control form-control-lg">
+                        <option selected="">Samsung</option>
+                        <option>LG</option>
+                    </select>
+                    <div class="valid-feedback "></div>
+                </div>
+                <div class="form-group ">
+                    <label for="Icon " class="fw-bold ">Hình ảnh</label>
+                    <input type="image" class="form-control form-control-lg " name="Icon " id="Icon " value="0.jpg ">
+                    <div class="valid-feedback "></div>
+                </div>
+                <div class="form-group custom-control custom-checkbox mb-1 ">
+                    <input type="checkbox" class="custom-control-input " id="status " checked="">
+                    <label class="custom-control-label " for="status ">Trạng thái</label>
+                </div>
+            </div>
+            <div class="modal-footer ">
+                <button type="button" class="btn btn-danger btn-lg me-md-2" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-success btn-lg" onclick="toastr.success('Sửa thành công!');" data-bs-dismiss="modal">Sửa</button>
+            </div>
+        </div>
+    </div>
+</div>
