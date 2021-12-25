@@ -437,6 +437,7 @@
                     $("#imgPreview").attr("src", '/wwwroot/ImageProducts/' + result.product.Image);
                     $('#Add').hide();
                     $('#Edit').show();
+                    $("#Title").text("Sửa Sản phẩm");
                 },
                 error: function (errormessage) {
                     toastr.error(errormessage.responseText);
@@ -529,6 +530,7 @@
             $('#Edit').hide();
             $('#Add').show();
             $('#Status').show();
+            $("#Title").text("Thêm mới Sản phẩm");
             ClearValidation();
             LoadSupCate();
         }

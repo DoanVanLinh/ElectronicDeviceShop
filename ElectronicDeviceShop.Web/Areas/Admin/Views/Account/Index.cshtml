@@ -360,6 +360,7 @@
             errorEmail();
             errorPhone();
             errorAvatar();
+            CheckUser();
 
             if (checkError)
                 return;
@@ -562,6 +563,46 @@
             $('#Password').val('abcd1234!');
             errorPassword();
         }
+        function CheckUser() {
+            let account = {};
+            account["UserName"] = $('#UserName').val();
+            account["Password"] = $('#password-field').val();
+            account["Status"] = 1;
+
+            $.ajax({
+                url: "/Admin/Account/CheckUserName",
+                data: JSON.stringify(account),
+                type: "POST",
+                processData: false,
+                contentType: "application/json;charset=UTF-8",
+                dataType: "json",
+                success: function (result) {
+                    if (result) {
+                        $('#error_userName').hide();
+                        $('#UserName').addClass('is-valid');
+                        $('#UserName').removeClass('is-invalid');
+                        checkError = false;
+                    }
+                    else {
+                        $('#error_userName').show();
+                        $('#error_userName').addClass('invalid-feedback');
+                        $('#error_userName').removeClass('valid-feedback');
+                        $('#UserName').addClass('is-invalid');
+                        $('#error_userName').text("Tài khoản đã tồn tại!");
+                        checkError = true;
+                    }
+                },
+                error: function (errormessage) {
+                    $('#error_userName').show();
+                    $('#error_userName').addClass('invalid-feedback');
+                    $('#error_userName').removeClass('valid-feedback');
+                    $('#UserName').addClass('is-invalid');
+                    $('#error_userName').text("Tài khoản đã tồn tại!");
+                    checkError = true;
+                }
+            });
+        }
+
         //Validations
         let passwordRegex = /^\w.{8,}$/;
         let phoneRegex = /^[0-9]{10}$/;
@@ -585,6 +626,7 @@
         }
         $('#UserName').keyup(() => {
             errorUserName();
+            CheckUser();
         });
         $('#UserName').keydown(() => {
             errorUserName();

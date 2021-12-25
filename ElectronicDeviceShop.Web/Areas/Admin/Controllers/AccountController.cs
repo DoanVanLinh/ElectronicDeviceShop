@@ -163,7 +163,11 @@ namespace ElectronicDeviceShop.Web.Areas.Admin.Controllers
             var response = accountService.Edit(acc);
             return Json(response.IsSuccessed, JsonRequestBehavior.AllowGet);
         }
-
+        public JsonResult CheckUserName(CreateAccountViewModel account)
+        {
+            var response = accountService.CheckUserName(account);
+            return Json(response.IsSuccessed, JsonRequestBehavior.AllowGet);
+        }
 
         [HttpPost]
         public ActionResult UploadFiles()

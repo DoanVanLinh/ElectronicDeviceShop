@@ -44,18 +44,13 @@
                         <div class="float-right">
                             <ul class="right_side">
                                 <li>
-                                    <a href="cart.html">
-                                        gift card
+                                    <a href="@Url.Action("Index","Account")">
+                                        Đăng nhập
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="tracking.html">
-                                        track order
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="contact.html">
-                                        Contact Us
+                                    <a href="@Url.Action("Register","Account")"">
+                                        Đăng ký
                                     </a>
                                 </li>
                             </ul>
@@ -69,7 +64,7 @@
                 <nav class="navbar navbar-expand-lg navbar-light w-100">
                     <!-- Brand and toggle get grouped for better mobile display -->
                     <a class="navbar-brand logo_h" href="/Product">
-                        <img src="/wwwroot/img/logo.png" alt="" />
+                        <img src="~/wwwroot/ImageProducts/MainLogo.png" height="50"/>
                     </a>
                     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
                             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -95,7 +90,6 @@
                                             <i class="ti-shopping-cart"></i>
                                         </a>
                                     </li>
-
                                     <li class="nav-item">
                                         <a href="@Url.Action("Detail", "Account")" class="icons">
                                             <i class="ti-user" aria-hidden="true"></i>

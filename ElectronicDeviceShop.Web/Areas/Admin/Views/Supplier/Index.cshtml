@@ -319,6 +319,7 @@
                     $("#imgPreview").attr("src", '/wwwroot/ImageProducts/' + result.Icon);
                     $('#Add').hide();
                     $('#Edit').show();
+                    $('#Title').text("Sửa nhà cung cấp");
                 },
                 error: function (errormessage) {
                     toastr.error(errormessage.responseText);
@@ -388,6 +389,7 @@
             $('#Edit').hide();
             $('#Add').show();
             $('#Status').show();
+            $('#Title').text("Thêm mới nhà cung cấp");
             ClearValidation();
         }
         function ClearValidation() {
