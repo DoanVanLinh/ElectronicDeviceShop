@@ -583,8 +583,8 @@
     <Content Include="wwwroot\vendors\owl-carousel\owl.carousel.min.js" />
     <Content Include="Areas\Admin\Views\Statistic\Index.cshtml" />
     <Content Include="Areas\Admin\Views\Home\_PartialAccount.cshtml" />
-    <Content Include="Areas\Admin\Views\Account\Profile.cshtml" />
     <Content Include="Areas\Admin\Views\Home\_SideBar.cshtml" />
+    <Content Include="Areas\Admin\Views\Account\ProfileUser.cshtml" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />

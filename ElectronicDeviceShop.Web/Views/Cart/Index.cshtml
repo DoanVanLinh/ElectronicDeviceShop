@@ -137,8 +137,7 @@
 
             var amount = parseInt($('#sst' + id).val());
             var price = parseInt($('#Price' + id).text().replaceAll('.', '').replace('đ', ''));
-            $('#Money' + id).html(formatter.format(price * amount));
-            TotalPrice();
+           
 
             let cart = {};
             cart["ID_Product"] = id;
@@ -153,7 +152,15 @@
                 contentType: "application/json;charset=utf-8",
                 dataType: "json",
                 success: function (result) {
-                  LoadData();
+                    if (result.IsSuccessed == true) {
+                        $('#Money' + id).html(formatter.format(price * amount));
+                        TotalPrice();
+                        LoadData();
+                    }
+                    else {
+                        toastr.error(result.ErrorMessage);
+                        LoadData();
+                    }
                 },
                 error: function (errormessage) {
                 }

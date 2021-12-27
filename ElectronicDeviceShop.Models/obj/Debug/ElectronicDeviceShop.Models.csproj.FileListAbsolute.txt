@@ -33,3 +33,15 @@ G:\Download\DO_AN\ElectronicDeviceShop\ElectronicDeviceShop.Models\obj\Debug\Ele
 G:\Download\DO_AN\ElectronicDeviceShop\ElectronicDeviceShop.Models\obj\Debug\ElectronicDeviceShop.Models.csproj.CopyComplete
 G:\Download\DO_AN\ElectronicDeviceShop\ElectronicDeviceShop.Models\obj\Debug\ElectronicDeviceShop.Models.dll
 G:\Download\DO_AN\ElectronicDeviceShop\ElectronicDeviceShop.Models\obj\Debug\ElectronicDeviceShop.Models.pdb
+G:\Download\ElectronicDeviceShop\ElectronicDeviceShop.Models\bin\Debug\ElectronicDeviceShop.Models.dll.config
+G:\Download\ElectronicDeviceShop\ElectronicDeviceShop.Models\bin\Debug\ElectronicDeviceShop.Models.dll
+G:\Download\ElectronicDeviceShop\ElectronicDeviceShop.Models\bin\Debug\ElectronicDeviceShop.Models.pdb
+G:\Download\ElectronicDeviceShop\ElectronicDeviceShop.Models\bin\Debug\EntityFramework.dll
+G:\Download\ElectronicDeviceShop\ElectronicDeviceShop.Models\bin\Debug\EntityFramework.SqlServer.dll
+G:\Download\ElectronicDeviceShop\ElectronicDeviceShop.Models\bin\Debug\EntityFramework.xml
+G:\Download\ElectronicDeviceShop\ElectronicDeviceShop.Models\bin\Debug\EntityFramework.SqlServer.xml
+G:\Download\ElectronicDeviceShop\ElectronicDeviceShop.Models\obj\Debug\ElectronicDeviceShop.Models.csproj.AssemblyReference.cache
+G:\Download\ElectronicDeviceShop\ElectronicDeviceShop.Models\obj\Debug\ElectronicDeviceShop.Models.csproj.CoreCompileInputs.cache
+G:\Download\ElectronicDeviceShop\ElectronicDeviceShop.Models\obj\Debug\ElectronicDeviceShop.Models.csproj.CopyComplete
+G:\Download\ElectronicDeviceShop\ElectronicDeviceShop.Models\obj\Debug\ElectronicDeviceShop.Models.dll
+G:\Download\ElectronicDeviceShop\ElectronicDeviceShop.Models\obj\Debug\ElectronicDeviceShop.Models.pdb

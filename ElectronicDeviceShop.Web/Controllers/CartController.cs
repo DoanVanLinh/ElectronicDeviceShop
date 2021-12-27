@@ -61,12 +61,12 @@ namespace ElectronicDeviceShop.Web.Controllers
         public JsonResult Edit(EditCartViewModel cart)
         {
             var response = cartService.Edit(cart);
-            return Json(response.IsSuccessed, JsonRequestBehavior.AllowGet);
+            return Json(response, JsonRequestBehavior.AllowGet);
         }
         public JsonResult Create(CreateCartViewModel cart)
         {
             var response = cartService.Create(cart);
-            return Json(response.IsSuccessed, JsonRequestBehavior.AllowGet);
+            return Json(response, JsonRequestBehavior.AllowGet);
         }
     }
 }

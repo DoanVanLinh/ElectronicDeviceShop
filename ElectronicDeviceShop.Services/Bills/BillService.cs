@@ -24,8 +24,20 @@ namespace ElectronicDeviceShop.Services.Bills
             try
             {
                 var bill = Mapper.Map<Bill>(request);
+
                 this.unitOfWork.BillRepository.Update(bill);
                 this.unitOfWork.SaveChange();
+                if (bill.Status == Status.CancelOrders)
+                {
+                    var billDetail = this.unitOfWork.BillDetailRepository.GetAll().Where(bd => bd.ID_Bill == bill.ID_Bill);
+                    foreach (var item in billDetail)
+                    {
+                        var product = this.unitOfWork.ProductRepository.GetAll().Where(p => p.ID_Product == item.ID_Product).FirstOrDefault();
+                        product.Amount += item.Amount;
+                        this.unitOfWork.ProductRepository.Update(product);
+                        this.unitOfWork.SaveChange();
+                    }
+                }
                 return new ResponseResult();
             }
             catch (Exception ex)
@@ -65,6 +77,7 @@ namespace ElectronicDeviceShop.Services.Bills
                 bill.Status = Status.NewOrders;
                 this.unitOfWork.BillRepository.Add(bill);
                 this.unitOfWork.SaveChange();
+                
                 return new ResponseResult();
             }
             catch (Exception ex)
@@ -75,7 +88,7 @@ namespace ElectronicDeviceShop.Services.Bills
 
         public EditBillViewModel GetBillNewest()
         {
-            var billDetail = this.unitOfWork.BillRepository.GetAll().Where(p => p.Status != Status.IsDeleted&&p.ID_Bill == GetAll().Max(bd=>bd.ID_Bill)).FirstOrDefault();
+            var billDetail = this.unitOfWork.BillRepository.GetAll().Where(p => p.Status != Status.IsDeleted && p.ID_Bill == GetAll().Max(bd => bd.ID_Bill)).FirstOrDefault();
             return Mapper.Map<EditBillViewModel>(billDetail);
         }
 

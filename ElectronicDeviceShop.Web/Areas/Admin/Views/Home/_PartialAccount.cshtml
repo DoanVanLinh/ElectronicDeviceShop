@@ -1,7 +1,7 @@
 ﻿@using ElectronicDeviceShop.ViewModels.Accounts
 @model AccountDetailViewModel
 <div class="d-flex align-items-center border-left flex-row m-0 p-0 text-black" style="list-style-type:none">
-    <a class="text-nowrap px-3" data-toggle="dropdown" href="@Url.Action("Profile","Account")" id="Profile">
+    <a class="text-nowrap px-3" data-toggle="dropdown" href="@Url.Action("ProfileUser","Account")" id="Profile">
         <img class="user-avatar rounded-circle mr-2" src="~/wwwroot/ImageProducts/@Model.Avatar" alt="User Avatar" height="40" width="40">
         <span class="d-none d-md-inline-block">@Model.UserName</span>
     </a>

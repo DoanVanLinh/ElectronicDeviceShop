@@ -82,6 +82,9 @@ namespace ElectronicDeviceShop.Web.Controllers
                     billService.Edit(billNewest);
                     break;
                 }
+                var productExist = productService.GetEditProductById(billDetail.ID_Product);
+                productExist.Amount -= item.Amount;
+                productService.Edit(productExist);
             }
             foreach (var item in cart)
             {

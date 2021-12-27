@@ -139,10 +139,12 @@ namespace ElectronicDeviceShop.Web.Areas.Admin.Controllers
             return Json(response.IsSuccessed, JsonRequestBehavior.AllowGet);
         }
 
-        public ActionResult Profile()
+        public ActionResult ProfileUser()
         {
             int id = int.Parse(Session["ID_Account"].ToString());
             var account = accountService.GetDetailAccountById(id);
+            if (account.Phone == null)
+                account.Phone = "";
             return View(account);
         }
         public JsonResult CheckPassword(EditAccountViewModel account)

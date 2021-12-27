@@ -126,7 +126,7 @@
     </div>
 }
 
-@section Chart{
+@section Script{
     <script>
         let allCategory = [];
         let allSellProductByCategory = [];
@@ -144,7 +144,50 @@
             GetAllShareOfYear();
             $(".nav-link").removeClass("active");
             $("#Statistic").addClass("active");
+
+            var ctxP = document.getElementById("pieChart").getContext('2d');
+            var myPieChart = new Chart(ctxP, {
+                type: 'pie',
+                data: {
+                    labels: allCategory,
+                    datasets: [{
+                        data: allSellProductByCategory,
+                        backgroundColor: ["#F7464A", "#46BFBD", "#FDB45C", "#949FB1", "#4D5360"],
+                        hoverBackgroundColor: ["#FF5A5E", "#5AD3D1", "#FFC870", "#A8B3C5", "#616774"]
+                    }]
+                },
+                options: {
+                    responsive: true
+                }
+            });
+            var ctxL = document.getElementById("lineChart").getContext('2d');
+            var myLineChart = new Chart(ctxL, {
+                type: 'line',
+                data: {
+                    labels: allMonth,
+                    datasets: [{
+                        label: "Doanh thu theo tháng",
+                        data: sharePerMonth,
+                        backgroundColor: [
+                            'rgba(0, 255, 0, .2)',
+                        ],
+                        borderColor: [
+                            'rgba(0, 255, 0, .7)',
+                        ],
+                        borderWidth: 2
+                    }
+                    ]
+                },
+                options: {
+                    responsive: true
+                }
+            });
+
+            myPieChart.update();
+            myLineChart.update();
         });
+        
+
         function GetAllCategory() {
             $.ajax({
                 url: "/Statistic/GetAllCategory",
@@ -166,21 +209,6 @@
                 }
             });
         }
-        var ctxP = document.getElementById("pieChart").getContext('2d');
-        var myPieChart = new Chart(ctxP, {
-            type: 'pie',
-            data: {
-                labels: allCategory,
-                datasets: [{
-                    data: allSellProductByCategory,
-                    backgroundColor: ["#F7464A", "#46BFBD", "#FDB45C", "#949FB1", "#4D5360"],
-                    hoverBackgroundColor: ["#FF5A5E", "#5AD3D1", "#FFC870", "#A8B3C5", "#616774"]
-                }]
-            },
-            options: {
-                responsive: true
-            }
-        });
         function GetAllProDuctByCategory() {
             $.ajax({
                 url: "/Statistic/GetAllProDuctByCategory",
@@ -290,29 +318,6 @@
             });
         }
         //line
-        var ctxL = document.getElementById("lineChart").getContext('2d');
-        var myLineChart = new Chart(ctxL, {
-            type: 'line',
-            data: {
-                labels: allMonth,
-                datasets: [{
-                    label: "Doanh thu theo tháng",
-                    data: sharePerMonth,
-                    backgroundColor: [
-                        'rgba(0, 255, 0, .2)',
-                    ],
-                    borderColor: [
-                        'rgba(0, 255, 0, .7)',
-                    ],
-                    borderWidth: 2
-                }
-                ]
-            },
-            options: {
-                responsive: true
-            }
-        });
-
         const Search = (page) => {
             var txtSearch = $("#txtSearch").val();
             if (txtSearch != "") {

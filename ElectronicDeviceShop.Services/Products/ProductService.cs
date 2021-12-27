@@ -73,7 +73,7 @@ namespace ElectronicDeviceShop.Services.Products
 
         public EditProductViewModel GetEditProductById(int id)
         {
-            var product = unitOfWork.ProductRepository.GetById(id);
+            var product = unitOfWork.ProductRepository.GetAll().Where(p=>p.ID_Product == id).FirstOrDefault();
             return Mapper.Map<EditProductViewModel>(product);
         }
         public DeleteProductViewModel GetDeleteProductById(int id)

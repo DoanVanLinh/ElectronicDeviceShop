@@ -83,8 +83,8 @@
                     </ul>
 
                     <div class="card_area">
-                        <a class="main_btn" onclick="AddCart();" href="#">Thêm vào rỏ</a>
-                        <a class="main_btn" onclick="return BuyNow();" href="/Cart/Index">Mua Ngay</a>
+                        <a class="main_btn" onclick="buyNow = false; AddCart();" href="#">Thêm vào rỏ</a>
+                        <a class="main_btn" onclick="buyNow = true; AddCart();">Mua Ngay</a>
                     </div>
                 </div>
             </div>
@@ -135,6 +135,7 @@
             }
             return true;
         }
+        let buyNow = false;
         function AddCart() {
             if (Check() == false)
                 return false;
@@ -152,28 +153,24 @@
                     contentType: "application/json;charset=utf-8",
                     dataType: "json",
                     success: function (result) {
-                        if (result) {
+                        if (result.IsSuccessed == true) {
                             toastr.success('Thêm giỏ hàng thành công!');
+                            if (buyNow == true)
+                                window.location.href = "/Cart/Index";
                         }
                         else {
-                            toastr.error('Thêm không thành thành công!');
+                            toastr.error(result.ErrorMessage);
                             return false;
                         }
                     },
                     error: function (errormessage) {
                         alert(errormessage.responseText);
                         toastr.error('Thêm không thành thành công!');
+                        return false;
                     }
                 });
             }
         }
-        function BuyNow() {
-            if (Check() == false)
-                return false;
-            else {
-                AddCart();
-                return true;
-            }
-        }
+        
     </script>
 }

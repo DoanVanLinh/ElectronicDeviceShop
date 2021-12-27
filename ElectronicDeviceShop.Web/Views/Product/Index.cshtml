@@ -236,7 +236,7 @@
                             html += '<a href="/Product/Detail/' + item.ID_Product + '">';
                             html += '<i class="ti-eye"></i>';
                             html += '</a>';
-                            html += ' <a onclick="AddCart(' + item.ID_Product + ');">';
+                            html += ' <a onclick="Check(' + item.ID_Product + ');">';
                             html += '<i class="ti-shopping-cart"></i>';
                             html += '</a>';
                             html += '</div>';
@@ -289,17 +289,33 @@
                 }
             });
         }
-        function Check() {
-            if (@Session["RoleAcc"] != 2) {
-                toastr.error('Bạn cần đăng nhập!');
-                return false;
-            }
-            return true;
+        function Check(id) {
+            $.ajax({
+                url: "/Product/GetById/"+id,
+                type: "GET",
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (result) {
+                    if (result.product.Amount == 0) {
+                        toastr.error('Đã hết hàng!');
+                        return false;
+                    }
+                    if (@Session["RoleAcc"] != 2) {
+                        toastr.error('Bạn cần đăng nhập!');
+                        return false;
+                    }
+                    else {
+                        AddCart(id);
+                        return true;
+                    }
+                },
+                error: function (errormessage) {
+                    toastr.error(errormessage.responseText);
+                }
+            });
+
         }
         function AddCart(id) {
-            if (Check() == false)
-                return false;
-            else {
                 let cart = {};
                 cart["ID_Product"] = id;
                 cart["Amount"] = 1;
@@ -313,11 +329,11 @@
                     contentType: "application/json;charset=utf-8",
                     dataType: "json",
                     success: function (result) {
-                        if (result) {
+                        if (result.IsSuccessed == true) {
                             toastr.success('Thêm giỏ hàng thành công!');
                         }
                         else {
-                            toastr.error('Thêm không thành thành công!');
+                            toastr.error(result.ErrorMessage);
                             return false;
                         }
                     },
@@ -326,7 +342,7 @@
                         toastr.error('Thêm không thành thành công!');
                     }
                 });
-            }
+
         }
         const Search = (page) => {
             var txtSearch = $("#txtSearch").val();

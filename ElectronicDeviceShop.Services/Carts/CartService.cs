@@ -25,6 +25,9 @@ namespace ElectronicDeviceShop.Services.Carts
             try
             {
                 var cart = Mapper.Map<Cart>(request);
+                var oldProduct = this.unitOfWork.ProductRepository.GetAll().Where(p => p.ID_Product == cart.ID_Product).FirstOrDefault();
+                if (oldProduct.Amount < cart.Amount)
+                    return new ResponseResult("Vượt quá số lượng hàng hiện có!");
                 this.unitOfWork.CartRepository.Update(cart);
                 this.unitOfWork.SaveChange();
                 return new ResponseResult();
@@ -57,8 +60,10 @@ namespace ElectronicDeviceShop.Services.Carts
 
                 if (checkCart != null)//da ton tai
                 {
-                    
                     checkCart.Amount += cart.Amount;
+                    var oldProduct = this.unitOfWork.ProductRepository.GetAll().Where(p => p.ID_Product == checkCart.ID_Product).FirstOrDefault();
+                    if(oldProduct.Amount<checkCart.Amount)
+                        return new ResponseResult("Vượt quá số lượng hàng hiện có!");
                     this.unitOfWork.CartRepository.Update(checkCart);
                 }
                 else
