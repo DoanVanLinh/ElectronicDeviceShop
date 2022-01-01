@@ -90,7 +90,7 @@ namespace ElectronicDeviceShop.Web.Controllers
                 Session["ID_Account"] = accountService.GetAll().Where(a => a.UserName == account.UserName).FirstOrDefault().ID_Account;
                 Session["RoleAcc"] = 2;
             }
-            return Json(new { newUrl = Url.Action("Index", "Home"), response = response.IsSuccessed }, JsonRequestBehavior.AllowGet);
+            return Json(new { newUrl = Url.Action("Index", "Product"), response = response.IsSuccessed }, JsonRequestBehavior.AllowGet);
         }
         public JsonResult Logout()
         {
